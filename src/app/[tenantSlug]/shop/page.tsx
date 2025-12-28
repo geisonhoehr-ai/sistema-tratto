@@ -25,6 +25,8 @@ import { tenants } from "@/mocks/tenants"
 import { inventory, type Product } from "@/mocks/inventory"
 import { cn } from "@/lib/utils"
 import { CustomerTrustBar } from "@/components/CustomerTrustBar"
+import { CustomerReviews } from "@/components/CustomerReviews"
+import { combos } from "@/mocks/combos"
 
 export default function ShopPage() {
     const params = useParams()
@@ -159,6 +161,52 @@ export default function ShopPage() {
 
             <main className="max-w-6xl mx-auto p-6 space-y-10">
                 <CustomerTrustBar tenant={tenant} />
+                <CustomerReviews tenantName={tenant.fullName} />
+                <section className="space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Combos recomendados</p>
+                            <h3 className="text-2xl font-black text-slate-900 dark:text-white">Pacotes favoritos</h3>
+                            <p className="text-sm text-slate-500 dark:text-zinc-400">Selecione uma experiência pronta e ganhe benefícios extras.</p>
+                        </div>
+                        <Button variant="outline" className="rounded-full border-slate-200 dark:border-zinc-800">
+                            Ver todos os combos
+                        </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {combos.filter(combo => combo.tenantId === tenant.id).map(combo => (
+                            <Card key={combo.id} className="rounded-3xl border-none shadow-lg bg-white dark:bg-zinc-900 overflow-hidden flex flex-col md:flex-row">
+                                <div className="md:w-1/3">
+                                    <img src={combo.image} alt={combo.name} className="h-full w-full object-cover" />
+                                </div>
+                                <div className="flex-1 p-6 space-y-4">
+                                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+                                        <Tag className="w-4 h-4" />
+                                        {combo.category}
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-black text-slate-900 dark:text-white">{combo.name}</h4>
+                                        <p className="text-sm text-slate-500 dark:text-zinc-400">{combo.description}</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-500 dark:text-zinc-400 space-y-1">
+                                        {combo.items.map((item) => (
+                                            <li key={item}>• {item}</li>
+                                        ))}
+                                    </ul>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-xs text-slate-400">De R$ {combo.originalPrice}</p>
+                                            <p className="text-2xl font-black text-primary">R$ {combo.price}</p>
+                                        </div>
+                                        <Button className="rounded-full px-6" onClick={() => addToCart(combo.id)}>
+                                            Adicionar combo
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
                 {/* Hero / Categories */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between">
