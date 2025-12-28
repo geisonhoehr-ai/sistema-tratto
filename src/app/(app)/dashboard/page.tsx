@@ -31,6 +31,7 @@ import { OnboardingChecklist } from "@/components/OnboardingChecklist"
 import { QuickActions } from "@/components/QuickActions"
 import { DailyGoals } from "@/components/DailyGoals"
 import { OnboardingWizard } from "@/components/OnboardingWizard"
+import { AccountHealthCard } from "@/components/AccountHealthCard"
 
 const chartData = [
     { name: 'Seg', total: 1200, customers: 12 },
@@ -114,6 +115,8 @@ export default function DashboardPage() {
             />
 
             <QuickActions />
+
+            <AccountHealthCard tenantId={currentTenant.id} />
 
             <DailyGoals tenantId={currentTenant.id} />
 
