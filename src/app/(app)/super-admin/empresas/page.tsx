@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import {
     Table,
     TableBody,
@@ -33,9 +34,20 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DetailDrawer } from "@/components/ui/detail-drawer"
 import { Search, MoreVertical, CheckCircle, XCircle, Pause, Play, Edit } from "lucide-react"
 
+const activationScore = (company: Company) => {
+    let score = 0
+    if (company.customDomain) score += 25
+    if (company.currentEmployees > 0) score += 25
+    if (company.currentAppointmentsThisMonth > 0) score += 25
+    if (company.monthlyRevenue > 0) score += 25
+    return score
+}
+
 export default function EmpresasPage() {
     const [companies, setCompanies] = useState(initialCompanies)
     const [searchTerm, setSearchTerm] = useState("")
+    const [statusFilter, setStatusFilter] = useState("all")
+    const [planFilter, setPlanFilter] = useState("all")
 
     // Modals state
     const [showNewCompany, setShowNewCompany] = useState(false)
@@ -55,10 +67,14 @@ export default function EmpresasPage() {
         logo: "🏢"
     })
 
-    const filteredCompanies = companies.filter(company =>
-        company.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        company.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const filteredCompanies = companies
+        .filter(company =>
+            company.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            company.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .filter(company => statusFilter === "all" || company.status === statusFilter)
+        .filter(company => planFilter === "all" || company.planId === planFilter)
+        .sort((a, b) => activationScore(b) - activationScore(a))
 
     const getStatusBadge = (status: string) => {
         const variants = {
@@ -159,11 +175,11 @@ export default function EmpresasPage() {
                 </Button>
             </div>
 
-            {/* Search */}
+            {/* Search & Filters */}
             <Card className="rounded-2xl border-none shadow-sm bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md">
                 <CardHeader>
-                    <div className="flex items-center gap-4">
-                        <div className="relative flex-1">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                        <div className="relative flex-1 w-full">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
                                 placeholder="Buscar por nome ou email..."
@@ -171,6 +187,34 @@ export default function EmpresasPage() {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10"
                             />
+                        </div>
+                        <div className="flex items-center gap-3 w-full lg:w-auto">
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="w-full lg:w-[180px]">
+                                    <SelectValue placeholder="Status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos os status</SelectItem>
+                                    <SelectItem value="active">Ativas</SelectItem>
+                                    <SelectItem value="trial">Trial</SelectItem>
+                                    <SelectItem value="suspended">Suspensas</SelectItem>
+                                    <SelectItem value="pending">Pendentes</SelectItem>
+                                    <SelectItem value="inactive">Inativas</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Select value={planFilter} onValueChange={setPlanFilter}>
+                                <SelectTrigger className="w-full lg:w-[180px]">
+                                    <SelectValue placeholder="Plano" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos os planos</SelectItem>
+                                    {plans.map(plan => (
+                                        <SelectItem key={plan.id} value={plan.id}>
+                                            {plan.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </CardHeader>
@@ -182,6 +226,7 @@ export default function EmpresasPage() {
                                 <TableHead>Plano</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Funcionários</TableHead>
+                                <TableHead>Ativação</TableHead>
                                 <TableHead>Receita Mensal</TableHead>
                                 <TableHead className="text-right">Ações</TableHead>
                             </TableRow>
@@ -214,6 +259,14 @@ export default function EmpresasPage() {
                                                 {company.currentEmployees}
                                                 {company.maxEmployees > 0 && ` / ${company.maxEmployees}`}
                                             </span>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="space-y-1">
+                                                <Progress value={activationScore(company)} />
+                                                <p className="text-[11px] text-muted-foreground">
+                                                    {activationScore(company)}%
+                                                </p>
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <span className="font-medium">
