@@ -33,7 +33,7 @@ export default function BookingPage() {
 
     // Find tenant by slug (in a real app, this would be an API call)
     const tenant = useMemo(() => {
-        return tenants.find(t => t.customDomain?.split('.')[0] === tenantSlug) || tenants[0]
+        return tenants.find(t => t.slug === tenantSlug) || tenants[0]
     }, [tenantSlug])
 
     const [step, setStep] = useState<Step>('service')

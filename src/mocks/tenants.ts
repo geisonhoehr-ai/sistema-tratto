@@ -11,6 +11,7 @@ export interface Tenant {
     customPrimaryColor?: string // Custom primary color
     customSecondaryColor?: string // Custom secondary color
     customDomain?: string // Custom domain like "belezapura.beautyflow.app"
+    slug: string // Friendly URL identifier like "beleza-pura"
 }
 
 export const tenants: Tenant[] = [
@@ -24,7 +25,8 @@ export const tenants: Tenant[] = [
         description: 'Especializado em tratamentos capilares premium',
         customPrimaryColor: '#8B5CF6',
         customSecondaryColor: '#A78BFA',
-        customDomain: 'belezapura.beautyflow.app'
+        customDomain: 'belezapura.beautyflow.app',
+        slug: 'beleza-pura'
     },
     {
         id: '2',
@@ -36,7 +38,8 @@ export const tenants: Tenant[] = [
         description: 'Seu destino para beleza e bem-estar',
         customPrimaryColor: '#EC4899',
         customSecondaryColor: '#F472B6',
-        customDomain: 'studioglamour.beautyflow.app'
+        customDomain: 'studioglamour.beautyflow.app',
+        slug: 'studio-glamour'
     },
     {
         id: '3',
@@ -48,7 +51,8 @@ export const tenants: Tenant[] = [
         description: 'Experiência completa de spa e estética',
         customPrimaryColor: '#06B6D4',
         customSecondaryColor: '#22D3EE',
-        customDomain: 'elegance.beautyflow.app'
+        customDomain: 'elegance.beautyflow.app',
+        slug: 'espaco-elegance'
     }
 ]
 

@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { stats, appointments } from "@/mocks/data"
 import { useTenant } from "@/contexts/tenant-context"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import { Calendar, TrendingUp, Users, DollarSign, Clock } from "lucide-react"
+import { Calendar, TrendingUp, Users, DollarSign, Clock, Share2, Copy, Check } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const chartData = [
     { name: 'Seg', total: 1200 },
@@ -17,18 +19,48 @@ const chartData = [
 
 export default function DashboardPage() {
     const { currentTenant } = useTenant()
+    const [copied, setCopied] = useState(false)
 
     // Filter appointments by current tenant
     const tenantAppointments = appointments.filter(apt => apt.tenantId === currentTenant.id)
 
+    const bookingUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/${currentTenant.slug}/book`
+        : `/${currentTenant.slug}/book`
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(bookingUrl)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
+
     return (
         <div className="space-y-8">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
                     <p className="text-muted-foreground mt-1">Bem-vindo de volta ao BeautyFlow.</p>
                 </div>
+
+                <Card className="flex items-center gap-4 px-4 py-2 bg-primary/5 border-primary/10 rounded-2xl">
+                    <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-primary/60 mb-0.5">Seu Link de Agendamento</p>
+                        <p className="text-sm font-medium truncate opacity-60 italic">{bookingUrl}</p>
+                    </div>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={copyToClipboard}
+                        className="rounded-xl hover:bg-primary/10 text-primary shrink-0"
+                    >
+                        {copied ? (
+                            <><Check className="w-4 h-4 mr-2" /> Copiado</>
+                        ) : (
+                            <><Copy className="w-4 h-4 mr-2" /> Copiar Link</>
+                        )}
+                    </Button>
+                </Card>
             </div>
 
             {/* Stats Grid - Bento Style */}
