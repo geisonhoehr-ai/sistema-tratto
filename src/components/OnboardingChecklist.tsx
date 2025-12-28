@@ -13,6 +13,7 @@ import { inventory } from "@/mocks/inventory"
 interface OnboardingChecklistProps {
     tenant: Tenant
     className?: string
+    onStartWizard?: () => void
 }
 
 const icons = {
@@ -23,7 +24,7 @@ const icons = {
     shop: ShoppingBag,
 }
 
-export function OnboardingChecklist({ tenant, className }: OnboardingChecklistProps) {
+export function OnboardingChecklist({ tenant, className, onStartWizard }: OnboardingChecklistProps) {
     const tenantServices = services.filter(service => service.tenantId === tenant.id)
     const tenantEmployees = employees.filter(employee => employee.tenantId === tenant.id)
     const tenantInventory = inventory.filter(item => item.tenantId === tenant.id && item.showOnline)
@@ -82,9 +83,21 @@ export function OnboardingChecklist({ tenant, className }: OnboardingChecklistPr
                     <h3 className="text-2xl font-black text-slate-900 dark:text-white">Próximos passos para {tenant.name}</h3>
                     <p className="text-sm text-slate-500 dark:text-zinc-400">Complete a lista para liberar todo o potencial da plataforma.</p>
                 </div>
-                <div className="text-right">
-                    <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Conclusão</p>
-                    <p className="text-3xl font-black text-primary">{completionPercent}%</p>
+                <div className="flex items-center gap-3">
+                    <div className="text-right">
+                        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Conclusão</p>
+                        <p className="text-3xl font-black text-primary">{completionPercent}%</p>
+                    </div>
+                    {onStartWizard && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl border-slate-200 dark:border-zinc-700"
+                            onClick={onStartWizard}
+                        >
+                            Iniciar passo a passo
+                        </Button>
+                    )}
                 </div>
             </div>
 

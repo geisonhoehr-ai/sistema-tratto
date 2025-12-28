@@ -1,6 +1,5 @@
 "use client"
 
-import { useMemo } from "react"
 import { motion } from "framer-motion"
 import {
     DollarSign,
@@ -20,8 +19,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useTenant } from "@/contexts/tenant-context"
+import { PdvQuickHub } from "@/components/PdvQuickHub"
 
 export default function FinanceiroPage() {
+    const { currentTenant } = useTenant()
     // Mock financial data
     const summary = {
         totalRevenue: 12450.00,
@@ -149,6 +151,8 @@ export default function FinanceiroPage() {
                     </Card>
                 </motion.div>
             </motion.div>
+
+            <PdvQuickHub tenantId={currentTenant.id} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Transactions Table */}

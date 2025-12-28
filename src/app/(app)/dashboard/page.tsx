@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils"
 import { OnboardingChecklist } from "@/components/OnboardingChecklist"
 import { QuickActions } from "@/components/QuickActions"
 import { DailyGoals } from "@/components/DailyGoals"
+import { OnboardingWizard } from "@/components/OnboardingWizard"
 
 const chartData = [
     { name: 'Seg', total: 1200, customers: 12 },
@@ -43,6 +44,7 @@ const chartData = [
 export default function DashboardPage() {
     const { currentTenant } = useTenant()
     const [copied, setCopied] = useState(false)
+    const [isWizardOpen, setIsWizardOpen] = useState(false)
 
     const tenantAppointments = appointments.filter(apt => apt.tenantId === currentTenant.id)
 
@@ -105,11 +107,21 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            <OnboardingChecklist tenant={currentTenant} className="mt-2" />
+            <OnboardingChecklist
+                tenant={currentTenant}
+                className="mt-2"
+                onStartWizard={() => setIsWizardOpen(true)}
+            />
 
             <QuickActions />
 
             <DailyGoals tenantId={currentTenant.id} />
+
+            <OnboardingWizard
+                open={isWizardOpen}
+                onOpenChange={setIsWizardOpen}
+                tenant={currentTenant}
+            />
 
             {/* Strategic Insights Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
