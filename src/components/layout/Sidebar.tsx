@@ -12,7 +12,11 @@ import {
     Scissors,
     UserCircle,
     LogOut,
-    Building2
+    Building2,
+    DollarSign,
+    Package,
+    Megaphone,
+    Smartphone
 } from "lucide-react"
 
 const menuSections = [
@@ -29,6 +33,10 @@ const menuSections = [
             { icon: Users, label: "Clientes", href: "/clientes" },
             { icon: Scissors, label: "Serviços", href: "/servicos" },
             { icon: UserCircle, label: "Funcionários", href: "/funcionarios" },
+            { icon: DollarSign, label: "Financeiro", href: "/financeiro" },
+            { icon: Package, label: "Estoque & PDV", href: "/estoque" },
+            { icon: Megaphone, label: "CRM & Marketing", href: "/crm" },
+            { icon: Smartphone, label: "Vista Profissional", href: "/profissional" },
         ]
     },
     {

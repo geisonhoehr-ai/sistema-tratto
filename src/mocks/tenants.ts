@@ -12,6 +12,7 @@ export interface Tenant {
     customSecondaryColor?: string // Custom secondary color
     customDomain?: string // Custom domain like "belezapura.beautyflow.app"
     slug: string // Friendly URL identifier like "beleza-pura"
+    whatsapp: string // Phone number for WhatsApp contact
 }
 
 export const tenants: Tenant[] = [
@@ -26,7 +27,8 @@ export const tenants: Tenant[] = [
         customPrimaryColor: '#8B5CF6',
         customSecondaryColor: '#A78BFA',
         customDomain: 'belezapura.beautyflow.app',
-        slug: 'beleza-pura'
+        slug: 'beleza-pura',
+        whatsapp: '5511999999999'
     },
     {
         id: '2',
@@ -39,7 +41,8 @@ export const tenants: Tenant[] = [
         customPrimaryColor: '#EC4899',
         customSecondaryColor: '#F472B6',
         customDomain: 'studioglamour.beautyflow.app',
-        slug: 'studio-glamour'
+        slug: 'studio-glamour',
+        whatsapp: '5511888888888'
     },
     {
         id: '3',
@@ -52,7 +55,8 @@ export const tenants: Tenant[] = [
         customPrimaryColor: '#06B6D4',
         customSecondaryColor: '#22D3EE',
         customDomain: 'elegance.beautyflow.app',
-        slug: 'espaco-elegance'
+        slug: 'espaco-elegance',
+        whatsapp: '5511777777777'
     }
 ]
 

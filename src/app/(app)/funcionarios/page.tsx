@@ -1,25 +1,37 @@
 "use client"
 
 import { useState } from "react"
-import { employees as initialEmployees, services, type Employee } from "@/mocks/services"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+    Plus,
+    Search,
+    Edit,
+    Trash2,
+    Calendar,
+    UserCheck,
+    Percent,
+    Smartphone,
+    Mail,
+    Sparkles,
+    ShieldCheck,
+    ChevronRight,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
 import { FormDialog } from "@/components/ui/form-dialog"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Search, Plus, Edit, Trash2, Clock, Percent, UserCheck, Calendar } from "lucide-react"
+import { employees as initialEmployees, services, type Employee, type Service } from "@/mocks/services"
+import { cn } from "@/lib/utils"
 
 const weekDays = [
     { id: 'monday', label: 'Segunda' },
@@ -52,7 +64,10 @@ export default function FuncionariosPage() {
 
     const filteredEmployees = employees.filter(emp =>
         emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(searchTerm.toLowerCase())
+        emp.specialties.some(specId => {
+            const service = services.find(s => s.id === specId)
+            return service?.name.toLowerCase().includes(searchTerm.toLowerCase())
+        })
     )
 
     const handleCreateEmployee = () => {
@@ -73,17 +88,17 @@ export default function FuncionariosPage() {
     const handleEditEmployee = () => {
         if (!selectedEmployee) return
 
-        setEmployees(employees.map(e =>
-            e.id === selectedEmployee.id
-                ? { ...e, ...formData, updatedAt: new Date().toISOString() }
-                : e
+        setEmployees(employees.map(emp =>
+            emp.id === selectedEmployee.id
+                ? { ...emp, ...formData, updatedAt: new Date().toISOString() }
+                : emp
         ))
         setShowEditEmployee(false)
         resetForm()
     }
 
     const handleDeleteEmployee = (employee: Employee) => {
-        setEmployees(employees.filter(e => e.id !== employee.id))
+        setEmployees(employees.filter(emp => emp.id !== employee.id))
         setShowConfirm(false)
     }
 
@@ -100,11 +115,6 @@ export default function FuncionariosPage() {
             roundRobinEnabled: employee.roundRobinEnabled
         })
         setShowEditEmployee(true)
-    }
-
-    const openDeleteDialog = (employee: Employee) => {
-        setSelectedEmployee(employee)
-        setShowConfirm(true)
     }
 
     const resetForm = () => {
@@ -130,322 +140,220 @@ export default function FuncionariosPage() {
         }))
     }
 
-    const setWorkingHours = (day: string, start: string, end: string) => {
-        setFormData(prev => ({
-            ...prev,
-            workingHours: {
-                ...prev.workingHours,
-                [day]: [{ start, end }]
-            }
-        }))
-    }
-
-    const removeWorkingDay = (day: string) => {
-        setFormData(prev => {
-            const newHours = { ...prev.workingHours }
-            delete newHours[day]
-            return { ...prev, workingHours: newHours }
-        })
-    }
-
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 pb-10">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Funcionários</h2>
-                    <p className="text-muted-foreground mt-1">
-                        Gerencie a equipe do seu salão
-                    </p>
+                    <h2 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Equipe</h2>
+                    <p className="text-slate-500 dark:text-zinc-400 font-medium">Gestão de profissionais e talentos.</p>
                 </div>
-                <Button onClick={() => setShowNewEmployee(true)}>
+                <Button onClick={() => setShowNewEmployee(true)} className="rounded-xl h-12 px-6 bg-primary text-white font-bold transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
                     <Plus className="w-4 h-4 mr-2" />
-                    Novo Funcionário
+                    Novo Profissional
                 </Button>
             </div>
 
-            {/* Search */}
-            <Card className="rounded-2xl border-none shadow-sm bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md">
-                <CardHeader>
-                    <div className="flex items-center gap-4">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Buscar por nome ou email..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
-                        </div>
+            {/* Search & Stats */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white dark:bg-zinc-900 p-6 rounded-[2rem] border-none shadow-sm">
+                <div className="relative flex-1 w-full max-w-md">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                        placeholder="Buscar por nome ou especialidade..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="h-12 pl-12 bg-slate-50 dark:bg-zinc-800 border-none rounded-2xl font-medium"
+                    />
+                </div>
+                <div className="flex gap-8">
+                    <div className="text-right">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Time</p>
+                        <p className="text-lg font-black text-slate-900 dark:text-white">{employees.length}</p>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Funcionário</TableHead>
-                                <TableHead>Especialidades</TableHead>
-                                <TableHead>Horário</TableHead>
-                                <TableHead>Comissão</TableHead>
-                                <TableHead>Round-Robin</TableHead>
-                                <TableHead className="text-right">Ações</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredEmployees.map((employee) => (
-                                <TableRow key={employee.id}>
-                                    <TableCell>
-                                        <div>
-                                            <p className="font-medium">{employee.name}</p>
-                                            <p className="text-sm text-muted-foreground">{employee.email}</p>
+                </div>
+            </div>
+
+            {/* Employee Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence mode="popLayout">
+                    {filteredEmployees.map((employee, idx) => (
+                        <motion.div
+                            key={employee.id}
+                            layout
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ delay: idx * 0.05 }}
+                        >
+                            <Card className="group relative overflow-hidden rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-8 hover:shadow-2xl transition-all duration-300">
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-start">
+                                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-2xl group-hover:scale-110 transition-transform">
+                                            {employee.name.charAt(0)}
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-wrap gap-1">
-                                            {employee.specialties.slice(0, 2).map(specId => {
-                                                const service = services.find(s => s.id === specId)
-                                                return service ? (
-                                                    <Badge key={specId} variant="outline" className="text-xs">
-                                                        {service.name}
-                                                    </Badge>
-                                                ) : null
-                                            })}
-                                            {employee.specialties.length > 2 && (
-                                                <Badge variant="outline" className="text-xs">
-                                                    +{employee.specialties.length - 2}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-1 text-sm">
-                                            <Calendar className="w-3 h-3" />
-                                            {Object.keys(employee.workingHours).length} dias/semana
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-1 font-medium">
-                                            <Percent className="w-3 h-3" />
-                                            {employee.commission}%
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {employee.roundRobinEnabled ? (
-                                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                                                <UserCheck className="w-3 h-3 mr-1" />
-                                                Ativo
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="outline">Inativo</Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex items-center justify-end gap-2">
+                                        <div className="flex gap-2">
                                             <Button
+                                                onClick={() => openEditDialog(employee)}
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => openEditDialog(employee)}
+                                                className="rounded-xl h-10 w-10 bg-slate-50 dark:bg-zinc-800/50 hover:bg-primary hover:text-white transition-all underline-none"
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </Button>
                                             <Button
+                                                onClick={() => {
+                                                    setSelectedEmployee(employee)
+                                                    setShowConfirm(true)
+                                                }}
                                                 variant="ghost"
                                                 size="icon"
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                onClick={() => openDeleteDialog(employee)}
+                                                className="rounded-xl h-10 w-10 bg-slate-50 dark:bg-zinc-800/50 hover:bg-red-500 hover:text-white transition-all underline-none"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </Button>
                                         </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                    </div>
 
-            {/* Modal Novo Funcionário */}
+                                    <div className="space-y-1">
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">{employee.name}</h3>
+                                        <div className="flex flex-wrap gap-1">
+                                            {employee.specialties.map(specId => {
+                                                const service = services.find(s => s.id === specId)
+                                                return (
+                                                    <Badge key={specId} variant="secondary" className="bg-slate-100 dark:bg-zinc-800 text-[10px] py-0 border-none">
+                                                        {service?.name || 'Serviço'}
+                                                    </Badge>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 py-6 border-y border-slate-100 dark:border-zinc-800">
+                                        <div className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-zinc-400">
+                                            <Mail className="w-4 h-4" />
+                                            <span className="truncate">{employee.email}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-zinc-400">
+                                                <Percent className="w-4 h-4 text-emerald-500" />
+                                                Comissão
+                                            </div>
+                                            <span className="font-bold text-slate-900 dark:text-white">{employee.commission}%</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex gap-2">
+                                            {employee.acceptsOnlineBooking && (
+                                                <Badge className="bg-emerald-500/10 text-emerald-500 border-none font-bold text-[9px] uppercase tracking-tighter">
+                                                    Booking Ativo
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
+                                            Agenda <ChevronRight className="w-3 h-3" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
+            </div>
+
+            {/* Modal Novo/Editar */}
             <FormDialog
-                open={showNewEmployee}
-                onOpenChange={setShowNewEmployee}
-                title="Novo Funcionário"
-                description="Cadastre um novo membro da equipe"
-                onSubmit={handleCreateEmployee}
-                submitLabel="Criar Funcionário"
+                open={showNewEmployee || showEditEmployee}
+                onOpenChange={showNewEmployee ? setShowNewEmployee : setShowEditEmployee}
+                title={showNewEmployee ? "Novo Profissional" : "Editar Profissional"}
+                description="Cadastre as informações e preferências do profissional."
+                onSubmit={showNewEmployee ? handleCreateEmployee : handleEditEmployee}
+                submitLabel={showNewEmployee ? "Concluir Cadastro" : "Salvar Alterações"}
             >
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2 col-span-2">
-                            <Label htmlFor="name">Nome Completo</Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="Maria Silva"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                placeholder="maria@salao.com"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="phone">Telefone</Label>
-                            <Input
-                                id="phone"
-                                value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                placeholder="(11) 99999-9999"
-                                required
-                            />
+                <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-4 scrollbar-thin">
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Informações Básicas</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2 space-y-2">
+                                <Label className="text-xs font-bold uppercase">Nome Completo</Label>
+                                <Input
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="rounded-xl h-12 bg-slate-50 dark:bg-zinc-800 border-none"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase">Email</Label>
+                                <Input
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="rounded-xl h-12 bg-slate-50 dark:bg-zinc-800 border-none"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase">Telefone</Label>
+                                <Input
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    className="rounded-xl h-12 bg-slate-50 dark:bg-zinc-800 border-none"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="border-t pt-4">
-                        <h4 className="font-semibold mb-3">Especialidades</h4>
-                        <div className="space-y-2">
+                    <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-zinc-800">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Especialidades</h4>
+                        <div className="grid grid-cols-2 gap-3">
                             {services.map(service => (
-                                <div key={service.id} className="flex items-center space-x-2">
+                                <div key={service.id} className="flex items-center space-x-2 p-3 bg-slate-50 dark:bg-zinc-800 rounded-xl">
                                     <Checkbox
-                                        id={`service-${service.id}`}
+                                        id={service.id}
                                         checked={formData.specialties.includes(service.id)}
-                                        onCheckedChange={() => toggleSpecialty(service.id)}
+                                        onCheckedChange={(checked) => toggleSpecialty(service.id)}
                                     />
-                                    <label
-                                        htmlFor={`service-${service.id}`}
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                    >
-                                        {service.name} ({service.category})
+                                    <label htmlFor={service.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                        {service.name}
                                     </label>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="border-t pt-4">
-                        <h4 className="font-semibold mb-3">Horário de Trabalho</h4>
-                        <div className="space-y-3">
-                            {weekDays.map(day => (
-                                <div key={day.id} className="flex items-center gap-3">
-                                    <div className="w-24">
-                                        <Label className="text-sm">{day.label}</Label>
-                                    </div>
-                                    <Input
-                                        type="time"
-                                        placeholder="09:00"
-                                        value={formData.workingHours[day.id]?.[0]?.start || ''}
-                                        onChange={(e) => setWorkingHours(
-                                            day.id,
-                                            e.target.value,
-                                            formData.workingHours[day.id]?.[0]?.end || '18:00'
-                                        )}
-                                        className="w-28"
-                                    />
-                                    <span className="text-muted-foreground">até</span>
-                                    <Input
-                                        type="time"
-                                        placeholder="18:00"
-                                        value={formData.workingHours[day.id]?.[0]?.end || ''}
-                                        onChange={(e) => setWorkingHours(
-                                            day.id,
-                                            formData.workingHours[day.id]?.[0]?.start || '09:00',
-                                            e.target.value
-                                        )}
-                                        className="w-28"
-                                    />
-                                    {formData.workingHours[day.id] && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeWorkingDay(day.id)}
-                                        >
-                                            <Trash2 className="w-3 h-3" />
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="border-t pt-4">
-                        <h4 className="font-semibold mb-3">Configurações</h4>
-                        <div className="space-y-4">
+                    <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-zinc-800">
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preferências & Financeiro</h4>
+                        <div className="grid grid-cols-1 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="commission">Comissão (%)</Label>
+                                <Label className="text-xs font-bold uppercase">Comissão (%)</Label>
                                 <Input
-                                    id="commission"
                                     type="number"
                                     value={formData.commission}
                                     onChange={(e) => setFormData({ ...formData, commission: Number(e.target.value) })}
-                                    min="0"
-                                    max="100"
+                                    className="rounded-xl h-12 bg-slate-50 dark:bg-zinc-800 border-none"
                                 />
                             </div>
-
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-zinc-800 rounded-2xl">
                                 <div>
-                                    <Label>Agendamento Online</Label>
-                                    <p className="text-sm text-muted-foreground">Aceitar agendamentos online</p>
+                                    <p className="text-sm font-bold">Reserva Online</p>
+                                    <p className="text-[10px] text-slate-400">Permitir que clientes agendem com este profissional</p>
                                 </div>
                                 <Switch
                                     checked={formData.acceptsOnlineBooking}
                                     onCheckedChange={(checked) => setFormData({ ...formData, acceptsOnlineBooking: checked })}
                                 />
                             </div>
-
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <Label>Round-Robin</Label>
-                                    <p className="text-sm text-muted-foreground">Distribuição automática de clientes</p>
-                                </div>
-                                <Switch
-                                    checked={formData.roundRobinEnabled}
-                                    onCheckedChange={(checked) => setFormData({ ...formData, roundRobinEnabled: checked })}
-                                />
-                            </div>
                         </div>
                     </div>
                 </div>
             </FormDialog>
 
-            {/* Modal Editar (mesmo formulário) */}
-            <FormDialog
-                open={showEditEmployee}
-                onOpenChange={setShowEditEmployee}
-                title="Editar Funcionário"
-                description={`Editando ${selectedEmployee?.name}`}
-                onSubmit={handleEditEmployee}
-                submitLabel="Salvar Alterações"
-            >
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    {/* Mesmo conteúdo do formulário de criar */}
-                    <p className="text-sm text-muted-foreground">Use o mesmo formulário do modal de criar</p>
-                </div>
-            </FormDialog>
-
-            {/* Confirm Delete */}
-            {selectedEmployee && (
-                <ConfirmDialog
-                    open={showConfirm}
-                    onOpenChange={setShowConfirm}
-                    title="Excluir Funcionário"
-                    description={`Tem certeza que deseja excluir "${selectedEmployee.name}"? Esta ação não pode ser desfeita.`}
-                    onConfirm={() => handleDeleteEmployee(selectedEmployee)}
-                    variant="destructive"
-                    confirmLabel="Excluir"
-                />
-            )}
+            <ConfirmDialog
+                open={showConfirm}
+                onOpenChange={setShowConfirm}
+                title="Remover Profissional?"
+                description="Esta ação removerá o acesso do profissional ao sistema. Os dados históricos permanecerão salvos."
+                onConfirm={() => selectedEmployee && handleDeleteEmployee(selectedEmployee)}
+                variant="destructive"
+            />
         </div>
     )
 }

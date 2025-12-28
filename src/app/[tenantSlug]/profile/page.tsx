@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import { useParams, useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { format, parseISO } from "date-fns"
+import { format, parseISO, differenceInHours, isAfter, addHours } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
     ChevronLeft,
@@ -14,8 +14,12 @@ import {
     ExternalLink,
     Sparkles,
     History,
-    Target
+    Target,
+    ShieldCheck,
+    AlertCircle,
+    Bell
 } from "lucide-react"
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -67,6 +71,21 @@ export default function CustomerProfilePage() {
         const aptTenant = tenants.find(t => t.id === apt.tenantId)
         const aptService = services.find(s => s.id === apt.serviceId)
 
+        // Cancellation Logic: 24h rule
+        const appointmentDate = parseISO(apt.date)
+        const [hours, minutes] = apt.time.split(':').map(Number)
+        const fullAptDate = addHours(appointmentDate, hours)
+        const canCancel = differenceInHours(fullAptDate, new Date()) >= 24 && apt.status === 'confirmed'
+
+        const handleCancelRequest = () => {
+            if (canCancel) {
+                alert("Solicitação de cancelamento enviada com sucesso!")
+            } else {
+                const message = encodeURIComponent(`Olá! Gostaria de cancelar meu agendamento de ${aptService?.name} no dia ${format(fullAptDate, "dd/MM")}.`)
+                window.open(`https://wa.me/${aptTenant?.whatsapp}?text=${message}`, '_blank')
+            }
+        }
+
         return (
             <Card className="p-5 rounded-3xl border-none shadow-sm bg-white dark:bg-zinc-900 hover:shadow-md transition-all active:scale-[0.99] group">
                 <div className="flex items-start justify-between mb-4">
@@ -98,10 +117,26 @@ export default function CustomerProfilePage() {
                     </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between">
-                    <span className="text-xs font-medium text-slate-400 tracking-tight">R$ {aptService?.price},00</span>
-                    <Button variant="ghost" size="sm" className="h-8 rounded-xl text-primary font-bold text-xs">
-                        Ver Detalhes <ExternalLink className="w-3 h-3 ml-2" />
-                    </Button>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Valor</span>
+                        <span className="text-sm font-black text-slate-900 dark:text-white">R$ {aptService?.price},00</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleCancelRequest}
+                            className={cn(
+                                "h-9 rounded-xl font-bold text-[10px] uppercase tracking-wider px-4",
+                                canCancel ? "text-red-500 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-primary hover:bg-slate-50"
+                            )}
+                        >
+                            {canCancel ? 'Cancelar' : 'Falar com Salão'}
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-9 w-9 rounded-xl text-slate-300 p-0">
+                            <ExternalLink className="w-4 h-4" />
+                        </Button>
+                    </div>
                 </div>
             </Card>
         )
@@ -145,6 +180,41 @@ export default function CustomerProfilePage() {
                         </div>
                     </Card>
                 </motion.div>
+
+                {/* Reminders Status Section */}
+                <motion.div
+                    initial="hidden" animate="visible" variants={containerVariants}
+                    transition={{ delay: 0.1 }}
+                >
+                    <Card className="p-6 rounded-[2.5rem] border-none shadow-lg bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 group">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center relative">
+                                    <Bell className="w-6 h-6 text-primary" />
+                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-900 rounded-full" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        Lembretes Ativos
+                                        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                    </h3>
+                                    <p className="text-xs text-slate-500 dark:text-zinc-400">Enviaremos notificações 1 dia e 1 hora antes.</p>
+                                </div>
+                            </div>
+                            <Badge variant="outline" className="rounded-full border-slate-200 dark:border-zinc-800 text-slate-400 font-bold text-[10px] uppercase">
+                                Automático
+                            </Badge>
+                        </div>
+                    </Card>
+                </motion.div>
+
+                {/* Info Alert */}
+                <Card className="p-4 rounded-3xl bg-amber-500/5 border-amber-500/10 flex gap-3 items-center">
+                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                    <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-widest leading-normal">
+                        Cancelamentos permitidos até 24h antes. Após esse prazo, entre em contato direto pelo WhatsApp.
+                    </p>
+                </Card>
 
                 {/* History Tabs */}
                 <Tabs defaultValue="tenant" className="w-full">
@@ -191,6 +261,7 @@ export default function CustomerProfilePage() {
                     </TabsContent>
                 </Tabs>
             </main>
+            <FloatingWhatsApp phone={tenant.whatsapp} tenantName={tenant.name} />
         </div>
     )
 }

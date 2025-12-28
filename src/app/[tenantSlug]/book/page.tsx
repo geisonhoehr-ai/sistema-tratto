@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { format, addDays, isSameDay, startOfToday } from "date-fns"
+import { format, addDays, isSameDay, startOfToday, parseISO } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import {
     ChevronLeft,
@@ -15,16 +15,19 @@ import {
     User,
     ArrowRight,
     MapPin,
-    Phone
+    Phone,
+    ShieldCheck
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { tenants } from "@/mocks/tenants"
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp"
 import { services, employees } from "@/mocks/services"
+import { appointments } from "@/mocks/data"
 import { cn } from "@/lib/utils"
 
-type Step = 'service' | 'professional' | 'datetime' | 'client_info' | 'confirmation' | 'success'
+type Step = 'service' | 'professional' | 'datetime' | 'client_info' | 'confirmation' | 'payment' | 'success'
 
 export default function BookingPage() {
     const params = useParams()
@@ -41,6 +44,34 @@ export default function BookingPage() {
     const [selectedEmployee, setSelectedEmployee] = useState<typeof employees[0] | null>(null)
     const [selectedDate, setSelectedDate] = useState<Date>(startOfToday())
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'pix' | 'card' | 'local' | null>(null)
+
+    // Up-sell Logic: Find a service for the next slot
+    const upsellService = useMemo(() => {
+        if (step !== 'success' || !selectedTime) return null
+
+        // 1. Get next slot
+        const timeSlots = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"]
+        const currentIdx = timeSlots.indexOf(selectedTime)
+        if (currentIdx === -1 || currentIdx === timeSlots.length - 1) return null
+
+        const nextSlot = timeSlots[currentIdx + 1]
+
+        // 2. Filter tenant services that AREN'T the selected one
+        const otherServices = services.filter(s => s.tenantId === tenant.id && s.id !== selectedService?.id)
+
+        // 3. For the mockup, we suggest the first one that is "quick" (like Manicure)
+        const candidate = otherServices.find(s => s.duration <= 60) || otherServices[0]
+
+        // 4. Check if slot is available (simulated)
+        const isTaken = appointments.some(apt =>
+            apt.tenantId === tenant.id &&
+            apt.time === nextSlot &&
+            format(parseISO(apt.date), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+        )
+
+        return isTaken ? null : { service: candidate, time: nextSlot }
+    }, [step, selectedTime, tenant.id, selectedService?.id, selectedDate])
 
     // Client Info State
     const [clientData, setClientData] = useState({
@@ -60,6 +91,7 @@ export default function BookingPage() {
         else if (step === 'professional' && selectedEmployee) setStep('datetime')
         else if (step === 'datetime' && selectedDate && selectedTime) setStep('client_info')
         else if (step === 'client_info' && clientData.name && clientData.email) setStep('confirmation')
+        else if (step === 'confirmation') setStep('payment')
     }
 
     const handleBack = () => {
@@ -67,6 +99,7 @@ export default function BookingPage() {
         else if (step === 'datetime') setStep('professional')
         else if (step === 'client_info') setStep('datetime')
         else if (step === 'confirmation') setStep('client_info')
+        else if (step === 'payment') setStep('confirmation')
     }
 
     const containerVariants = {
@@ -77,34 +110,77 @@ export default function BookingPage() {
 
     if (step === 'success') {
         return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+            <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex items-center justify-center p-6">
                 <motion.div
                     initial="hidden" animate="visible" variants={containerVariants}
-                    className="max-w-md w-full text-center space-y-6"
+                    className="max-w-md w-full text-center space-y-8"
                 >
-                    <div className="w-24 h-24 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-200">
-                        <CheckCircle2 className="w-12 h-12 text-white" />
+                    <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full animate-pulse" />
+                        <div className="relative w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/40">
+                            <CheckCircle2 className="w-10 h-10 text-white" />
+                        </div>
                     </div>
+
                     <div className="space-y-2">
-                        <h1 className="text-3xl font-black tracking-tight text-slate-900">Agendamento Confirmado!</h1>
-                        <p className="text-slate-500">Tudo pronto! Enviamos um lembrete para o seu e-mail e WhatsApp.</p>
+                        <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Agendado!</h1>
+                        <p className="text-slate-500 dark:text-zinc-400 font-medium">Tudo certo, {clientData.name}. Te esperamos lá!</p>
                     </div>
-                    <Card className="p-6 rounded-[2rem] border-none shadow-xl bg-white space-y-4">
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-400 font-medium tracking-tight uppercase">Serviço</span>
-                            <span className="text-slate-900 font-bold">{selectedService?.name}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-400 font-medium tracking-tight uppercase">Profissional</span>
-                            <span className="text-slate-900 font-bold">{selectedEmployee?.name}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-400 font-medium tracking-tight uppercase">Data e Hora</span>
-                            <span className="text-slate-900 font-bold">
-                                {format(selectedDate, "dd 'de' MMM", { locale: ptBR })} às {selectedTime}
+
+                    <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12" />
+                        <div className="relative z-10 flex flex-col items-center gap-4 text-center">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-2xl">
+                                {tenant.logo}
+                            </div>
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-slate-900 dark:text-white">{selectedService?.name}</h3>
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                    {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })} às {selectedTime}
+                                </p>
+                            </div>
+                            <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/5 px-3 py-1 rounded-full">
+                                Código: #BF{Math.floor(Math.random() * 9000) + 1000}
                             </span>
                         </div>
                     </Card>
+
+                    {/* Order Bump Section */}
+                    {upsellService && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <Card className="p-6 rounded-[2.5rem] border-2 border-primary/20 bg-primary/5 relative overflow-hidden group">
+                                <div className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-bl-3xl uppercase tracking-widest shadow-lg">
+                                    Oferta Especial
+                                </div>
+                                <div className="space-y-4 text-left">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                            <Sparkles className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-bold text-slate-900 dark:text-white leading-tight">Que tal aproveitar?</h4>
+                                            <p className="text-xs text-slate-500 dark:text-zinc-400">Vimos que há um horário vago para {upsellService.service.name.toLowerCase()} logo após o seu.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-white dark:border-zinc-800 flex items-center justify-between">
+                                        <div className="space-y-0.5">
+                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{upsellService.service.name}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Às {upsellService.time} • R$ {upsellService.service.price},00</p>
+                                        </div>
+                                        <Button size="sm" className="rounded-xl bg-primary hover:bg-primary/90 text-white font-bold h-10 px-6 active:scale-95 transition-all">
+                                            Adicionar
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    )}
+
                     <div className="flex flex-col sm:flex-row gap-3">
                         <Button
                             onClick={() => router.push(`/${tenantSlug}/profile?email=${clientData.email}`)}
@@ -121,6 +197,7 @@ export default function BookingPage() {
                         </Button>
                     </div>
                 </motion.div>
+                <FloatingWhatsApp phone={tenant.whatsapp} tenantName={tenant.name} />
             </div>
         )
     }
@@ -468,12 +545,84 @@ export default function BookingPage() {
                                             <p className="text-sm font-medium text-slate-500">Valor Total</p>
                                             <p className="text-3xl font-black text-primary">R$ {selectedService?.price},00</p>
                                         </div>
-                                        <Badge className="bg-emerald-500/10 text-emerald-600 border-none px-4 py-1.5 rounded-full font-bold">
-                                            Pagamento no local
-                                        </Badge>
+                                        <div className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                            Seguro
+                                        </div>
                                     </div>
                                 </div>
                             </Card>
+                        </motion.div>
+                    )}
+
+                    {/* Step: Payment */}
+                    {step === 'payment' && (
+                        <motion.div
+                            key="payment"
+                            initial="hidden" animate="visible" exit="exit" variants={containerVariants}
+                            className="space-y-8"
+                        >
+                            <div className="flex items-center gap-4 -mb-4">
+                                <Button variant="ghost" size="sm" onClick={handleBack} className="rounded-full">
+                                    <ChevronLeft className="w-4 h-4 mr-2" /> Voltar
+                                </Button>
+                            </div>
+                            <div className="space-y-1">
+                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Forma de pagamento</h2>
+                                <p className="text-slate-500 dark:text-zinc-400">Como você prefere pagar pelo serviço?</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                {[
+                                    { id: 'pix', label: 'Pix (5% de Desconto)', icon: '💠', description: 'Liberação imediata' },
+                                    { id: 'card', label: 'Cartão de Crédito', icon: '💳', description: 'Até 3x sem juros' },
+                                    { id: 'local', label: 'Pagar no Local', icon: '🤝', description: 'Pague ao finalizar o serviço' },
+                                ].map((method) => (
+                                    <Card
+                                        key={method.id}
+                                        onClick={() => setSelectedPaymentMethod(method.id as any)}
+                                        className={cn(
+                                            "p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.98]",
+                                            selectedPaymentMethod === method.id
+                                                ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5"
+                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-slate-200 dark:hover:border-zinc-800 shadow-sm"
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                                                {method.icon}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900 dark:text-white leading-tight">{method.label}</h4>
+                                                <p className="text-xs text-slate-500 dark:text-zinc-400">{method.description}</p>
+                                            </div>
+                                        </div>
+                                        <div className={cn(
+                                            "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                                            selectedPaymentMethod === method.id ? "border-primary bg-primary" : "border-slate-200"
+                                        )}>
+                                            {selectedPaymentMethod === method.id && <div className="w-2 h-2 bg-white rounded-full" />}
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+
+                            {selectedPaymentMethod === 'pix' && (
+                                <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total com Desconto</p>
+                                        <p className="text-2xl font-black text-emerald-400">R$ {Math.floor((selectedService?.price || 0) * 0.95)},00</p>
+                                    </div>
+                                    <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl">
+                                        <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                                            <Sparkles className="w-5 h-5 text-white" />
+                                        </div>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-300 leading-tight">
+                                            O código Pix expira em 30 minutos após a confirmação.
+                                        </p>
+                                    </div>
+                                </Card>
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -487,12 +636,13 @@ export default function BookingPage() {
                             (step === 'service' && !selectedService) ||
                             (step === 'professional' && !selectedEmployee) ||
                             (step === 'datetime' && (!selectedDate || !selectedTime)) ||
-                            (step === 'client_info' && (!clientData.name || !clientData.email))
+                            (step === 'client_info' && (!clientData.name || !clientData.email)) ||
+                            (step === 'payment' && !selectedPaymentMethod)
                         }
-                        onClick={step === 'confirmation' ? () => setStep('success') : handleNext}
+                        onClick={step === 'payment' ? () => setStep('success') : handleNext}
                         className="w-full h-16 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-2xl shadow-primary/30 group transition-all active:scale-[0.98]"
                     >
-                        {step === 'confirmation' ? 'Confirmar Agendamento' : 'Próximo Passo'}
+                        {step === 'payment' ? 'Finalizar Agendamento' : 'Próximo Passo'}
                         <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-1 transition-transform" />
                     </Button>
                 </div>
