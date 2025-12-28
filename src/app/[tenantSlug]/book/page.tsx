@@ -24,7 +24,7 @@ import { tenants } from "@/mocks/tenants"
 import { services, employees } from "@/mocks/services"
 import { cn } from "@/lib/utils"
 
-type Step = 'service' | 'professional' | 'datetime' | 'confirmation' | 'success'
+type Step = 'service' | 'professional' | 'datetime' | 'client_info' | 'confirmation' | 'success'
 
 export default function BookingPage() {
     const params = useParams()
@@ -42,6 +42,13 @@ export default function BookingPage() {
     const [selectedDate, setSelectedDate] = useState<Date>(startOfToday())
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
 
+    // Client Info State
+    const [clientData, setClientData] = useState({
+        name: "",
+        email: "",
+        phone: ""
+    })
+
     const tenantServices = services.filter(s => s.tenantId === tenant.id)
     const tenantEmployees = employees.filter(e => e.tenantId === tenant.id)
 
@@ -51,13 +58,15 @@ export default function BookingPage() {
     const handleNext = () => {
         if (step === 'service' && selectedService) setStep('professional')
         else if (step === 'professional' && selectedEmployee) setStep('datetime')
-        else if (step === 'datetime' && selectedDate && selectedTime) setStep('confirmation')
+        else if (step === 'datetime' && selectedDate && selectedTime) setStep('client_info')
+        else if (step === 'client_info' && clientData.name && clientData.email) setStep('confirmation')
     }
 
     const handleBack = () => {
         if (step === 'professional') setStep('service')
         else if (step === 'datetime') setStep('professional')
-        else if (step === 'confirmation') setStep('datetime')
+        else if (step === 'client_info') setStep('datetime')
+        else if (step === 'confirmation') setStep('client_info')
     }
 
     const containerVariants = {
@@ -96,12 +105,21 @@ export default function BookingPage() {
                             </span>
                         </div>
                     </Card>
-                    <Button
-                        onClick={() => router.push(`/${tenantSlug}/book`)}
-                        className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-lg"
-                    >
-                        Fazer outro agendamento
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                            onClick={() => router.push(`/${tenantSlug}/profile?email=${clientData.email}`)}
+                            variant="outline"
+                            className="flex-1 h-14 rounded-2xl border-slate-200 font-bold text-slate-600"
+                        >
+                            Ver Meus Agendamentos
+                        </Button>
+                        <Button
+                            onClick={() => router.push(`/${tenantSlug}/book`)}
+                            className="flex-1 h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold"
+                        >
+                            Novo Agendamento
+                        </Button>
+                    </div>
                 </motion.div>
             </div>
         )
@@ -133,13 +151,13 @@ export default function BookingPage() {
             <main className="max-w-4xl mx-auto p-6 pb-32">
                 {/* Progress Bar */}
                 <div className="mb-10 flex gap-2">
-                    {['service', 'professional', 'datetime', 'confirmation'].map((s, idx) => (
+                    {['service', 'professional', 'datetime', 'client_info', 'confirmation'].map((s, idx) => (
                         <div
                             key={s}
                             className={cn(
                                 "h-1.5 flex-1 rounded-full transition-all duration-500",
                                 step === s ? "bg-primary w-3" :
-                                    ['service', 'professional', 'datetime', 'confirmation'].indexOf(step) > idx
+                                    ['service', 'professional', 'datetime', 'client_info', 'confirmation'].indexOf(step) > idx
                                         ? "bg-primary/40"
                                         : "bg-slate-200 dark:bg-zinc-800"
                             )}
@@ -311,6 +329,86 @@ export default function BookingPage() {
                         </motion.div>
                     )}
 
+                    {/* Step: Client Info */}
+                    {step === 'client_info' && (
+                        <motion.div
+                            key="client_info"
+                            initial="hidden" animate="visible" exit="exit" variants={containerVariants}
+                            className="space-y-8"
+                        >
+                            <div className="flex items-center gap-4 -mb-4">
+                                <Button variant="ghost" size="sm" onClick={handleBack} className="rounded-full">
+                                    <ChevronLeft className="w-4 h-4 mr-2" /> Voltar
+                                </Button>
+                            </div>
+                            <div className="space-y-1">
+                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Falta pouco!</h2>
+                                <p className="text-slate-500 dark:text-zinc-400">Preencha seus dados para finalizarmos o agendamento.</p>
+                            </div>
+
+                            <div className="space-y-4 max-w-lg">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Nome Completo</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                                            <User className="w-5 h-5" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="Como gostaria de ser chamado?"
+                                            value={clientData.name}
+                                            onChange={(e) => setClientData({ ...clientData, name: e.target.value })}
+                                            className="w-full h-16 pl-12 pr-4 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">E-mail</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                                            <div className="flex items-center justify-center w-5 h-5">
+                                                <span className="text-lg font-bold">@</span>
+                                            </div>
+                                        </div>
+                                        <input
+                                            type="email"
+                                            placeholder="seu@email.com"
+                                            value={clientData.email}
+                                            onChange={(e) => setClientData({ ...clientData, email: e.target.value })}
+                                            className="w-full h-16 pl-12 pr-4 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Celular / WhatsApp</label>
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                                            <Phone className="w-5 h-5" />
+                                        </div>
+                                        <input
+                                            type="tel"
+                                            placeholder="(00) 00000-0000"
+                                            value={clientData.phone}
+                                            onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
+                                            className="w-full h-16 pl-12 pr-4 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Card className="p-6 rounded-[2rem] bg-emerald-500/5 border-emerald-500/10 flex gap-4 items-center">
+                                <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                                    <Sparkles className="w-5 h-5 text-white" />
+                                </div>
+                                <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
+                                    Pronto! Com esses dados, você poderá consultar seu histórico completo a qualquer momento.
+                                </p>
+                            </Card>
+                        </motion.div>
+                    )}
+
                     {/* Step: Confirmation */}
                     {step === 'confirmation' && (
                         <motion.div
@@ -388,7 +486,8 @@ export default function BookingPage() {
                         disabled={
                             (step === 'service' && !selectedService) ||
                             (step === 'professional' && !selectedEmployee) ||
-                            (step === 'datetime' && (!selectedDate || !selectedTime))
+                            (step === 'datetime' && (!selectedDate || !selectedTime)) ||
+                            (step === 'client_info' && (!clientData.name || !clientData.email))
                         }
                         onClick={step === 'confirmation' ? () => setStep('success') : handleNext}
                         className="w-full h-16 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white font-black text-xl shadow-2xl shadow-primary/30 group transition-all active:scale-[0.98]"
