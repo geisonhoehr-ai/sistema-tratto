@@ -27,6 +27,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { OnboardingChecklist } from "@/components/OnboardingChecklist"
+import { QuickActions } from "@/components/QuickActions"
+import { DailyGoals } from "@/components/DailyGoals"
 
 const chartData = [
     { name: 'Seg', total: 1200, customers: 12 },
@@ -101,6 +104,12 @@ export default function DashboardPage() {
                     </Button>
                 </Card>
             </div>
+
+            <OnboardingChecklist tenant={currentTenant} className="mt-2" />
+
+            <QuickActions />
+
+            <DailyGoals tenantId={currentTenant.id} />
 
             {/* Strategic Insights Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

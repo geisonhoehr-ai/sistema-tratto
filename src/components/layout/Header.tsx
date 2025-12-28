@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { Badge } from "@/components/ui/badge"
 import { notifications as initialNotifications } from "@/mocks/notifications"
 import { formatDistanceToNow } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -44,6 +45,19 @@ export function Header() {
             reminder: '⏰'
         }
         return icons[type as keyof typeof icons] || '📢'
+    }
+
+    useEffect(() => {
+        if (!isSuperAdmin && isTenantMenuOpen) {
+            setIsTenantMenuOpen(false)
+        }
+    }, [isSuperAdmin, isTenantMenuOpen])
+
+    const handleTenantSelect = (tenantId: string) => {
+        const tenant = allTenants.find(t => t.id === tenantId)
+        if (!tenant) return
+        setCurrentTenant(tenant)
+        setIsTenantMenuOpen(false)
     }
 
     return (
@@ -145,19 +159,68 @@ export function Header() {
                 </div>
 
                 {/* Tenant & User Profile */}
-                <button
-                    onClick={() => isSuperAdmin && setIsTenantMenuOpen(!isTenantMenuOpen)}
-                    className="flex items-center gap-3 p-1 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 hover:shadow-md transition-all group"
-                >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-xs font-black shadow-lg">
-                        {currentTenant.name.substring(0, 2).toUpperCase()}
-                    </div>
-                    <div className="text-left hidden lg:block pr-2">
-                        <p className="text-xs font-black text-slate-900 dark:text-white leading-none mb-1">{currentTenant.name}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{isSuperAdmin ? 'Super Admin' : 'Administrador'}</p>
-                    </div>
-                    {isSuperAdmin && <ChevronDown className="w-4 h-4 text-slate-400 mr-2 group-hover:text-primary transition-colors" />}
-                </button>
+                <div className="relative">
+                    <button
+                        onClick={() => isSuperAdmin && setIsTenantMenuOpen(!isTenantMenuOpen)}
+                        className="flex items-center gap-3 p-1 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 hover:shadow-md transition-all group"
+                    >
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-xs font-black shadow-lg">
+                            {currentTenant.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="text-left hidden lg:block pr-2">
+                            <p className="text-xs font-black text-slate-900 dark:text-white leading-none mb-1">{currentTenant.name}</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{isSuperAdmin ? 'Super Admin' : 'Administrador'}</p>
+                        </div>
+                        {isSuperAdmin && <ChevronDown className="w-4 h-4 text-slate-400 mr-2 group-hover:text-primary transition-colors" />}
+                    </button>
+
+                    <AnimatePresence>
+                        {isSuperAdmin && isTenantMenuOpen && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setIsTenantMenuOpen(false)} />
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                    className="absolute right-0 mt-3 w-[320px] rounded-2xl bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 shadow-2xl z-50 overflow-hidden"
+                                >
+                                    <div className="p-4 border-b border-slate-100 dark:border-zinc-800">
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">Empresas</p>
+                                        <p className="text-sm font-semibold text-slate-900 dark:text-white">Selecione uma conta para administrar</p>
+                                    </div>
+                                    <div className="max-h-72 overflow-y-auto">
+                                        {allTenants.map((tenant) => {
+                                            const isActive = tenant.id === currentTenant.id
+                                            return (
+                                                <button
+                                                    key={tenant.id}
+                                                    onClick={() => handleTenantSelect(tenant.id)}
+                                                    className={cn(
+                                                        "w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors",
+                                                        isActive && "bg-primary/5"
+                                                    )}
+                                                >
+                                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-black text-sm">
+                                                        {tenant.name.substring(0, 2).toUpperCase()}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{tenant.fullName}</p>
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{tenant.customDomain || `${tenant.slug}.beautyflow.app`}</p>
+                                                    </div>
+                                                    {isActive && (
+                                                        <Badge variant="outline" className="text-[10px] uppercase border-none bg-primary/10 text-primary">
+                                                            Atual
+                                                        </Badge>
+                                                    )}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </header>
     )
