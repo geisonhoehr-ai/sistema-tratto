@@ -249,6 +249,28 @@ export default function AgendaPage() {
                                                     </motion.div>
                                                 )}
 
+                                                {/* Global Blocks (Shared Mode) */}
+                                                {currentTenant.schedulingType === 'shared' && filteredAppointments
+                                                    .filter(apt => apt.staffId !== employee.id)
+                                                    .map(apt => {
+                                                        const layout = getAppointmentWithBuffer(apt)
+                                                        return (
+                                                            <div
+                                                                key={`block-${apt.id}`}
+                                                                className="absolute left-0 right-0 bg-slate-100/30 dark:bg-white/5 border-y border-dashed border-black/5 dark:border-white/10 z-0 flex items-center justify-center pointer-events-none overflow-hidden"
+                                                                style={{
+                                                                    top: layout.top,
+                                                                    height: layout.height,
+                                                                }}
+                                                            >
+                                                                <span className="text-[8px] font-bold text-slate-300 dark:text-zinc-600 uppercase tracking-widest whitespace-nowrap rotate-[-5deg]">
+                                                                    Sala Ocupada • {apt.customer.split(' ')[0]}
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+
                                                 {/* Appointments */}
                                                 <AnimatePresence>
                                                     {employeeAppointments.map(apt => {

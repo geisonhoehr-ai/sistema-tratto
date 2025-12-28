@@ -88,8 +88,69 @@ export default function BookingPage() {
     const tenantServices = services.filter(s => s.tenantId === tenant.id)
     const tenantEmployees = employees.filter(e => e.tenantId === tenant.id)
 
-    // Mock time slots
-    const timeSlots = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"]
+    // Dynamic Slot Generation
+    const timeSlots = useMemo(() => {
+        if (!selectedService || !selectedEmployee || !selectedDate) return []
+
+        const slots: string[] = []
+        const dayOfWeek = format(selectedDate, 'eeee', { locale: ptBR }).toLowerCase()
+        const employeeSchedule = selectedEmployee.workingHours[dayOfWeek]
+
+        if (!employeeSchedule || employeeSchedule.length === 0) return []
+
+        // Simulation parameters
+        const intervalStep = 15 // minutes
+        const serviceTotalDuration = (selectedService.bufferBefore || 0) + selectedService.duration + (selectedService.bufferAfter || 0)
+
+        employeeSchedule.forEach(shift => {
+            const [startH, startM] = shift.start.split(':').map(Number)
+            const [endH, endM] = shift.end.split(':').map(Number)
+
+            let currentTime = new Date(selectedDate)
+            currentTime.setHours(startH, startM, 0, 0)
+
+            const endTime = new Date(selectedDate)
+            endTime.setHours(endH, endM, 0, 0)
+
+            while (currentTime.getTime() + serviceTotalDuration * 60000 <= endTime.getTime()) {
+                const slotTime = format(currentTime, 'HH:mm')
+
+                // Check for conflicts
+                const isTaken = appointments.some(apt => {
+                    const aptStart = parseISO(apt.date)
+                    const [aptH, aptM] = apt.time.split(':').map(Number)
+                    aptStart.setHours(aptH, aptM, 0, 0)
+
+                    const aptEnd = new Date(aptStart.getTime() + apt.duration * 60000)
+
+                    // Target window
+                    const targetStart = new Date(currentTime)
+                    const targetEnd = new Date(currentTime.getTime() + serviceTotalDuration * 60000)
+
+                    // Overlap check
+                    const overlaps = (targetStart < aptEnd && targetEnd > aptStart)
+
+                    if (!overlaps) return false
+
+                    // If individual mode, only care about THIS professional
+                    if (tenant.schedulingType === 'individual') {
+                        return apt.staffId === selectedEmployee.id
+                    }
+
+                    // If shared mode, ANY appointment in the tenant is a conflict
+                    return apt.tenantId === tenant.id
+                })
+
+                if (!isTaken) {
+                    slots.push(slotTime)
+                }
+
+                currentTime = new Date(currentTime.getTime() + intervalStep * 60000)
+            }
+        })
+
+        return slots
+    }, [selectedService, selectedEmployee, selectedDate, tenant.id, tenant.schedulingType])
 
     const handleNext = () => {
         if (step === 'service' && selectedService) setStep('professional')

@@ -31,13 +31,24 @@ import {
     Settings2,
     ShieldCheck,
     ChevronRight,
-    Zap
+    Zap,
+    LayoutGrid,
+    List as ListIcon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 
 const categories = ["Cabelo", "Unhas", "Maquiagem", "Estética", "Massagem", "Depilação", "Sobrancelha"]
 
 export default function ServicosPage() {
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     const [services, setServices] = useState(initialServices)
     const [searchTerm, setSearchTerm] = useState("")
     const [showNewService, setShowNewService] = useState(false)
@@ -164,91 +175,184 @@ export default function ServicosPage() {
                         className="h-12 pl-12 bg-slate-50 dark:bg-zinc-800 border-none rounded-2xl font-medium"
                     />
                 </div>
-                <div className="flex gap-8">
-                    <div className="text-right">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ativos</p>
-                        <p className="text-lg font-black text-slate-900 dark:text-white">{services.length}</p>
+                <div className="flex gap-4 items-center">
+                    <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewMode('grid')}
+                            className={cn(
+                                "rounded-lg h-9 w-9 p-0 transition-all",
+                                viewMode === 'grid' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                            )}
+                        >
+                            <LayoutGrid className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewMode('list')}
+                            className={cn(
+                                "rounded-lg h-9 w-9 p-0 transition-all",
+                                viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                            )}
+                        >
+                            <ListIcon className="w-4 h-4" />
+                        </Button>
+                    </div>
+                    <div className="flex gap-8 border-l border-slate-100 dark:border-zinc-800 pl-8">
+                        <div className="text-right">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ativos</p>
+                            <p className="text-lg font-black text-slate-900 dark:text-white">{services.length}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Service Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServices.map((service, idx) => (
-                    <motion.div
-                        key={service.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: idx * 0.05 }}
-                    >
-                        <Card className="group relative overflow-hidden rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-8 hover:shadow-2xl transition-all duration-300">
-                            {/* Category Badge */}
-                            <div className="absolute top-6 right-6">
-                                <Badge className="bg-slate-100 dark:bg-zinc-800 text-slate-500 border-none font-bold text-[9px] uppercase tracking-widest px-3 py-1">
-                                    {service.category}
-                                </Badge>
-                            </div>
-
-                            <div className="space-y-6">
-                                <div className="space-y-2">
-                                    <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                                        <Sparkles className="w-7 h-7" />
-                                    </div>
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white">{service.name}</h3>
-                                    <p className="text-xs text-slate-400 line-clamp-2 font-medium min-h-[32px]">{service.description}</p>
+            {/* Content View */}
+            {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredServices.map((service, idx) => (
+                        <motion.div
+                            key={service.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: idx * 0.05 }}
+                        >
+                            <Card className="group relative overflow-hidden rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-8 hover:shadow-2xl transition-all duration-300">
+                                {/* Category Badge */}
+                                <div className="absolute top-6 right-6">
+                                    <Badge className="bg-slate-100 dark:bg-zinc-800 text-slate-500 border-none font-bold text-[9px] uppercase tracking-widest px-3 py-1">
+                                        {service.category}
+                                    </Badge>
                                 </div>
 
-                                {/* Stats Grid */}
-                                <div className="grid grid-cols-2 gap-4 py-6 border-y border-slate-100 dark:border-zinc-800">
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Preço</p>
-                                        <p className="text-lg font-black text-slate-900 dark:text-white">R$ {service.price}</p>
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <div className="w-14 h-14 rounded-2xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                            <Sparkles className="w-7 h-7" />
+                                        </div>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white">{service.name}</h3>
+                                        <p className="text-xs text-slate-400 line-clamp-2 font-medium min-h-[32px]">{service.description}</p>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Duração</p>
-                                        <p className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-1">
-                                            <Clock className="w-4 h-4 text-emerald-500" />
+
+                                    {/* Stats Grid */}
+                                    <div className="grid grid-cols-2 gap-4 py-6 border-y border-slate-100 dark:border-zinc-800">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Preço</p>
+                                            <p className="text-lg font-black text-slate-900 dark:text-white">R$ {service.price}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Duração</p>
+                                            <p className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-1">
+                                                <Clock className="w-4 h-4 text-emerald-500" />
+                                                {service.duration}m
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Features */}
+                                    <div className="flex gap-2">
+                                        {service.allowOnlineBooking && (
+                                            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg uppercase">
+                                                <Zap className="w-3 h-3" /> Booking On
+                                            </div>
+                                        )}
+                                        {service.requiresDeposit && (
+                                            <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded-lg uppercase">
+                                                <ShieldCheck className="w-3 h-3" /> Depósito
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <Button
+                                            onClick={() => openEditDialog(service)}
+                                            variant="outline"
+                                            className="flex-1 rounded-xl h-11 border-slate-200 dark:border-zinc-800 font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all"
+                                        >
+                                            Configurar
+                                        </Button>
+                                        <Button
+                                            onClick={() => openDeleteDialog(service)}
+                                            size="icon"
+                                            variant="ghost"
+                                            className="rounded-xl h-11 w-11 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
+                        </motion.div>
+                    ))}
+                </div>
+            ) : (
+                <div className="rounded-[2rem] overflow-hidden border-none shadow-sm bg-white dark:bg-zinc-900">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent border-slate-100 dark:border-zinc-800">
+                                <TableHead className="pl-8 py-6 font-bold text-xs uppercase tracking-widest">Serviço</TableHead>
+                                <TableHead className="font-bold text-xs uppercase tracking-widest">Categoria</TableHead>
+                                <TableHead className="font-bold text-xs uppercase tracking-widest">Duração</TableHead>
+                                <TableHead className="font-bold text-xs uppercase tracking-widest">Preço</TableHead>
+                                <TableHead className="font-bold text-xs uppercase tracking-widest">Status</TableHead>
+                                <TableHead className="text-right pr-8 font-bold text-xs uppercase tracking-widest">Ações</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredServices.map((service) => (
+                                <TableRow key={service.id} className="border-slate-50 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                    <TableCell className="pl-8 py-5">
+                                        <div className="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{service.name}</div>
+                                        <div className="text-[10px] text-slate-400 truncate max-w-[200px]">{service.description}</div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="rounded-full border-slate-200 font-bold text-[9px] uppercase">
+                                            {service.category}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2 font-bold text-slate-600 dark:text-zinc-400">
+                                            <Clock className="w-3 h-3 text-emerald-500" />
                                             {service.duration}m
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Features */}
-                                <div className="flex gap-2">
-                                    {service.allowOnlineBooking && (
-                                        <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-lg uppercase">
-                                            <Zap className="w-3 h-3" /> Booking On
                                         </div>
-                                    )}
-                                    {service.requiresDeposit && (
-                                        <div className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-500/10 px-2 py-1 rounded-lg uppercase">
-                                            <ShieldCheck className="w-3 h-3" /> Depósito
+                                    </TableCell>
+                                    <TableCell className="font-black text-slate-900 dark:text-white">
+                                        R$ {service.price}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-1">
+                                            {service.allowOnlineBooking && <Zap className="w-3 h-3 text-emerald-500" />}
+                                            {service.requiresDeposit && <ShieldCheck className="w-3 h-3 text-amber-500" />}
                                         </div>
-                                    )}
-                                </div>
-
-                                <div className="flex gap-2 pt-2">
-                                    <Button
-                                        onClick={() => openEditDialog(service)}
-                                        variant="outline"
-                                        className="flex-1 rounded-xl h-11 border-slate-200 dark:border-zinc-800 font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all"
-                                    >
-                                        Configurar
-                                    </Button>
-                                    <Button
-                                        onClick={() => openDeleteDialog(service)}
-                                        size="icon"
-                                        variant="ghost"
-                                        className="rounded-xl h-11 w-11 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </Card>
-                    </motion.div>
-                ))}
-            </div>
+                                    </TableCell>
+                                    <TableCell className="text-right pr-8">
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                onClick={() => openEditDialog(service)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary"
+                                            >
+                                                <Settings2 className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                onClick={() => openDeleteDialog(service)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 rounded-lg text-slate-400 hover:text-red-500"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
 
             {/* Modal Novo/Editar */}
             <FormDialog

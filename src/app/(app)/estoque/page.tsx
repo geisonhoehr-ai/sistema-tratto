@@ -16,8 +16,18 @@ import {
     ArrowRight,
     Barcode,
     Tag,
-    Globe
+    Globe,
+    LayoutGrid,
+    List as ListIcon
 } from "lucide-react"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,6 +37,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
 export default function EstoquePage() {
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     // Mock inventory data
     const [products, setProducts] = useState(initialInventory)
 
@@ -193,81 +204,162 @@ export default function EstoquePage() {
                 <TabsContent value="inventario">
                     <Card className="rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-8">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-primary">
-                                    <Package className="w-6 h-6" />
+                            <div className="flex gap-4 items-center">
+                                <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setViewMode('grid')}
+                                        className={cn(
+                                            "rounded-lg h-9 w-9 p-0 transition-all",
+                                            viewMode === 'grid' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                                        )}
+                                    >
+                                        <LayoutGrid className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setViewMode('list')}
+                                        className={cn(
+                                            "rounded-lg h-9 w-9 p-0 transition-all",
+                                            viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                                        )}
+                                    >
+                                        <ListIcon className="w-4 h-4" />
+                                    </Button>
                                 </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Inventário Completo</h3>
-                                    <p className="text-sm text-slate-500">Controle de entradas e saídas.</p>
+                                <div className="flex gap-2 border-l border-slate-100 dark:border-zinc-800 pl-4">
+                                    <Button variant="outline" className="rounded-xl border-slate-200">
+                                        <Filter className="w-4 h-4 mr-2" /> Categorias
+                                    </Button>
+                                    <Button variant="outline" className="rounded-xl border-slate-200">
+                                        <Plus className="w-4 h-4 mr-2" /> Ajustar Estoque
+                                    </Button>
                                 </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <Button variant="outline" className="rounded-xl border-slate-200">
-                                    <Filter className="w-4 h-4 mr-2" /> Categorias
-                                </Button>
-                                <Button variant="outline" className="rounded-xl border-slate-200">
-                                    <Plus className="w-4 h-4 mr-2" /> Ajustar Estoque
-                                </Button>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            {products.map(product => (
-                                <div key={product.id} className="flex items-center justify-between p-6 rounded-3xl border border-slate-50 dark:border-zinc-800 group hover:border-primary/20 hover:bg-primary/[0.01] transition-all">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-2xl">
-                                            📦
+                        {viewMode === 'grid' ? (
+                            <div className="space-y-4">
+                                {products.map(product => (
+                                    <div key={product.id} className="flex items-center justify-between p-6 rounded-3xl border border-slate-50 dark:border-zinc-800 group hover:border-primary/20 hover:bg-primary/[0.01] transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-2xl">
+                                                📦
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-slate-900 dark:text-white">{product.name}</h4>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <Badge variant="outline" className="rounded-full border-slate-100 font-bold text-[9px] uppercase">
+                                                        {product.category}
+                                                    </Badge>
+                                                    <span className="text-xs font-bold text-slate-400">R$ {product.price},00</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-900 dark:text-white">{product.name}</h4>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <Badge variant="outline" className="rounded-full border-slate-100 font-bold text-[9px] uppercase">
-                                                    {product.category}
-                                                </Badge>
-                                                <span className="text-xs font-bold text-slate-400">R$ {product.price},00</span>
+
+                                        <div className="flex items-center gap-12">
+                                            <div className="text-center">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                                                {product.stock <= product.minStock ? (
+                                                    <Badge className="bg-amber-500/10 text-amber-500 border-none font-bold text-[10px] uppercase">
+                                                        Baixo Estoque
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge className="bg-emerald-500/10 text-emerald-500 border-none font-bold text-[10px] uppercase">
+                                                        Ok
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <div className="text-center min-w-[80px]">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Stock</p>
+                                                <p className="text-xl font-black text-slate-900 dark:text-white">{product.stock}</p>
+                                            </div>
+                                            <div className="flex flex-col items-center gap-1 min-w-[100px]">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Loja Online</p>
+                                                <Switch
+                                                    checked={product.showOnline}
+                                                    onCheckedChange={(checked) => {
+                                                        setProducts(products.map(p => p.id === product.id ? { ...p, showOnline: checked } : p))
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-primary">
+                                                    <Tag className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-red-500">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div className="flex items-center gap-12">
-                                        <div className="text-center">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
-                                            {product.stock <= product.minStock ? (
-                                                <Badge className="bg-amber-500/10 text-amber-500 border-none font-bold text-[10px] uppercase">
-                                                    Baixo Estoque
-                                                </Badge>
-                                            ) : (
-                                                <Badge className="bg-emerald-500/10 text-emerald-500 border-none font-bold text-[10px] uppercase">
-                                                    Ok
-                                                </Badge>
-                                            )}
-                                        </div>
-                                        <div className="text-center min-w-[80px]">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Stock</p>
-                                            <p className="text-xl font-black text-slate-900 dark:text-white">{product.stock}</p>
-                                        </div>
-                                        <div className="flex flex-col items-center gap-1 min-w-[100px]">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Loja Online</p>
-                                            <Switch
-                                                checked={product.showOnline}
-                                                onCheckedChange={(checked) => {
-                                                    setProducts(products.map(p => p.id === product.id ? { ...p, showOnline: checked } : p))
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-primary">
-                                                <Tag className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-red-500">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-[2rem] overflow-hidden border border-slate-50 dark:border-zinc-800/50">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="hover:bg-transparent border-slate-100 dark:border-zinc-800">
+                                            <TableHead className="pl-8 py-6 font-bold text-xs uppercase tracking-widest">Produto</TableHead>
+                                            <TableHead className="font-bold text-xs uppercase tracking-widest">Categoria</TableHead>
+                                            <TableHead className="font-bold text-xs uppercase tracking-widest">Estoque</TableHead>
+                                            <TableHead className="font-bold text-xs uppercase tracking-widest">Preço</TableHead>
+                                            <TableHead className="font-bold text-xs uppercase tracking-widest">Loja Online</TableHead>
+                                            <TableHead className="text-right pr-8 font-bold text-xs uppercase tracking-widest">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {products.map((product) => (
+                                            <TableRow key={product.id} className="border-slate-50 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                                <TableCell className="pl-8 py-5">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center">📦</div>
+                                                        <div className="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{product.name}</div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline" className="rounded-full border-slate-200 font-bold text-[9px] uppercase">
+                                                        {product.category}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold">{product.stock} un.</span>
+                                                        {product.stock <= product.minStock && (
+                                                            <span className="text-[9px] font-bold text-amber-500 uppercase">Repor</span>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="font-bold text-slate-900 dark:text-white">
+                                                    R$ {product.price},00
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Switch
+                                                        checked={product.showOnline}
+                                                        onCheckedChange={(checked) => {
+                                                            setProducts(products.map(p => p.id === product.id ? { ...p, showOnline: checked } : p))
+                                                        }}
+                                                        className="scale-75"
+                                                    />
+                                                </TableCell>
+                                                <TableCell className="text-right pr-8">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary">
+                                                            <Tag className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-red-500">
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        )}
                     </Card>
                 </TabsContent>
             </Tabs>

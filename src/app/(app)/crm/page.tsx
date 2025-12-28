@@ -15,8 +15,19 @@ import {
     ArrowUpRight,
     TrendingUp,
     Gift,
-    ShieldAlert
+    ShieldAlert,
+    LayoutGrid,
+    List as ListIcon,
+    Settings
 } from "lucide-react"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,6 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
 export default function CRMPage() {
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
     // Mock data for CRM
     const [coupons, setCoupons] = useState([
         { id: 1, code: "WELCOME10", type: "percent", value: 10, usage: 45, status: "active", expires: "2025-12-31" },
@@ -110,37 +122,111 @@ export default function CRMPage() {
                     <Card className="rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-8">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Gerenciador de Cupons</h3>
-                            <div className="flex gap-2">
+                            <div className="flex gap-4 items-center">
+                                <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setViewMode('grid')}
+                                        className={cn(
+                                            "rounded-lg h-9 w-9 p-0 transition-all",
+                                            viewMode === 'grid' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                                        )}
+                                    >
+                                        <LayoutGrid className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setViewMode('list')}
+                                        className={cn(
+                                            "rounded-lg h-9 w-9 p-0 transition-all",
+                                            viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-primary" : "text-slate-400"
+                                        )}
+                                    >
+                                        <ListIcon className="w-4 h-4" />
+                                    </Button>
+                                </div>
                                 <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800">
                                     <Search className="w-4 h-4" />
                                 </Button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {coupons.map(coupon => (
-                                <div key={coupon.id} className="relative p-6 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800 group hover:border-primary transition-all overflow-hidden bg-slate-50/50 dark:bg-zinc-800/50">
-                                    <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full group-hover:scale-150 transition-transform" />
-                                    <div className="flex justify-between items-start mb-4">
-                                        <Badge className={cn(
-                                            "font-bold text-[10px] uppercase",
-                                            coupon.status === 'active' ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-200 text-slate-400"
-                                        )}>
-                                            {coupon.status === 'active' ? 'Ativo' : 'Inativo'}
-                                        </Badge>
-                                        <p className="text-xs font-bold text-slate-400">Expira em {coupon.expires}</p>
+                        {viewMode === 'grid' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {coupons.map(coupon => (
+                                    <div key={coupon.id} className="relative p-6 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800 group hover:border-primary transition-all overflow-hidden bg-slate-50/50 dark:bg-zinc-800/50">
+                                        <div className="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full group-hover:scale-150 transition-transform" />
+                                        <div className="flex justify-between items-start mb-4">
+                                            <Badge className={cn(
+                                                "font-bold text-[10px] uppercase",
+                                                coupon.status === 'active' ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-200 text-slate-400"
+                                            )}>
+                                                {coupon.status === 'active' ? 'Ativo' : 'Inativo'}
+                                            </Badge>
+                                            <p className="text-xs font-bold text-slate-400">Expira em {coupon.expires}</p>
+                                        </div>
+                                        <h4 className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white mb-1">{coupon.code}</h4>
+                                        <p className="text-sm font-bold text-primary mb-6">
+                                            {coupon.type === 'percent' ? `${coupon.value}% de desconto` : `R$ ${coupon.value} de desconto`}
+                                        </p>
+                                        <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-zinc-800">
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{coupon.usage} usos</p>
+                                            <Button variant="ghost" size="sm" className="font-bold text-primary text-xs h-8">Editar</Button>
+                                        </div>
                                     </div>
-                                    <h4 className="text-2xl font-black tracking-tighter text-slate-900 dark:text-white mb-1">{coupon.code}</h4>
-                                    <p className="text-sm font-bold text-primary mb-6">
-                                        {coupon.type === 'percent' ? `${coupon.value}% de desconto` : `R$ ${coupon.value} de desconto`}
-                                    </p>
-                                    <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-zinc-800">
-                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{coupon.usage} usos</p>
-                                        <Button variant="ghost" size="sm" className="font-bold text-primary text-xs h-8">Editar</Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-2xl overflow-hidden border border-slate-100 dark:border-zinc-800/50">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="hover:bg-transparent border-slate-100 dark:border-zinc-800">
+                                            <TableHead className="pl-6 py-4 font-bold text-[10px] uppercase tracking-widest">Código</TableHead>
+                                            <TableHead className="font-bold text-[10px] uppercase tracking-widest">Desconto</TableHead>
+                                            <TableHead className="font-bold text-[10px] uppercase tracking-widest">Expiração</TableHead>
+                                            <TableHead className="font-bold text-[10px] uppercase tracking-widest">Usos</TableHead>
+                                            <TableHead className="font-bold text-[10px] uppercase tracking-widest">Status</TableHead>
+                                            <TableHead className="text-right pr-6 font-bold text-[10px] uppercase tracking-widest">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {coupons.map((coupon) => (
+                                            <TableRow key={coupon.id} className="border-slate-50 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors">
+                                                <TableCell className="pl-6 py-4">
+                                                    <span className="font-black text-slate-900 dark:text-white tracking-tight">{coupon.code}</span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="text-xs font-bold text-primary">
+                                                        {coupon.type === 'percent' ? `${coupon.value}%` : `R$ ${coupon.value}`}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="text-xs text-slate-400 font-medium">{coupon.expires}</span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="text-xs font-bold text-slate-600 dark:text-zinc-400">{coupon.usage}</span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge className={cn(
+                                                        "font-bold text-[9px] uppercase border-none",
+                                                        coupon.status === 'active' ? "bg-emerald-500/10 text-emerald-500" : "bg-slate-100 text-slate-400"
+                                                    )}>
+                                                        {coupon.status === 'active' ? 'Ativo' : 'Inativo'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right pr-6">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-slate-400 hover:text-primary">
+                                                        <Settings className="w-4 h-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        )}
                     </Card>
                 </TabsContent>
 

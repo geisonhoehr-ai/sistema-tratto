@@ -13,6 +13,7 @@ export interface Tenant {
     customDomain?: string // Custom domain like "belezapura.beautyflow.app"
     slug: string // Friendly URL identifier like "beleza-pura"
     whatsapp: string // Phone number for WhatsApp contact
+    schedulingType: 'individual' | 'shared' // Shared = single room/resource constraint
 }
 
 export const tenants: Tenant[] = [
@@ -28,7 +29,8 @@ export const tenants: Tenant[] = [
         customSecondaryColor: '#A78BFA',
         customDomain: 'belezapura.beautyflow.app',
         slug: 'beleza-pura',
-        whatsapp: '5511999999999'
+        whatsapp: '5511999999999',
+        schedulingType: 'individual'
     },
     {
         id: '2',
@@ -42,7 +44,8 @@ export const tenants: Tenant[] = [
         customSecondaryColor: '#F472B6',
         customDomain: 'studioglamour.beautyflow.app',
         slug: 'studio-glamour',
-        whatsapp: '5511888888888'
+        whatsapp: '5511888888888',
+        schedulingType: 'shared' // Testing shared mode here
     },
     {
         id: '3',
@@ -56,7 +59,8 @@ export const tenants: Tenant[] = [
         customSecondaryColor: '#22D3EE',
         customDomain: 'elegance.beautyflow.app',
         slug: 'espaco-elegance',
-        whatsapp: '5511777777777'
+        whatsapp: '5511777777777',
+        schedulingType: 'individual'
     }
 ]
 
