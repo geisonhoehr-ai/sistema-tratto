@@ -28,6 +28,7 @@ import { services, employees } from "@/mocks/services"
 import { appointments } from "@/mocks/data"
 import { mockCustomers, type Customer } from "@/mocks/customers"
 import { cn } from "@/lib/utils"
+import { CustomerTrustBar } from "@/components/CustomerTrustBar"
 
 type Step = 'service' | 'professional' | 'datetime' | 'client_info' | 'confirmation' | 'payment' | 'success'
 
@@ -310,7 +311,8 @@ export default function BookingPage() {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto p-6 pb-32">
+            <main className="max-w-4xl mx-auto p-6 pb-32 space-y-8">
+                <CustomerTrustBar tenant={tenant} />
                 {/* Progress Bar */}
                 <div className="mb-10 flex gap-2">
                     {['service', 'professional', 'datetime', 'client_info', 'confirmation'].map((s, idx) => (

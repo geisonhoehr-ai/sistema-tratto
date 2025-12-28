@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input"
 import { tenants } from "@/mocks/tenants"
 import { inventory, type Product } from "@/mocks/inventory"
 import { cn } from "@/lib/utils"
+import { CustomerTrustBar } from "@/components/CustomerTrustBar"
 
 export default function ShopPage() {
     const params = useParams()
@@ -157,6 +158,7 @@ export default function ShopPage() {
             </header>
 
             <main className="max-w-6xl mx-auto p-6 space-y-10">
+                <CustomerTrustBar tenant={tenant} />
                 {/* Hero / Categories */}
                 <section className="space-y-6">
                     <div className="flex items-center justify-between">
