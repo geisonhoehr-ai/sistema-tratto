@@ -17,7 +17,8 @@ import {
     Target,
     ShieldCheck,
     AlertCircle,
-    Bell
+    Bell,
+    ShoppingBag
 } from "lucide-react"
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp"
 import { Button } from "@/components/ui/button"
@@ -151,8 +152,18 @@ export default function CustomerProfilePage() {
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
                     <h1 className="text-lg font-black tracking-tight">Meu Perfil</h1>
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-900 shadow-sm">
-                        <User className="w-5 h-5 text-slate-400" />
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push(`/${tenantSlug}/shop`)}
+                            className="rounded-full bg-slate-100 dark:bg-zinc-800"
+                        >
+                            <ShoppingBag className="w-5 h-5 text-slate-400" />
+                        </Button>
+                        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border-2 border-white dark:border-zinc-900 shadow-sm">
+                            <User className="w-5 h-5 text-slate-400" />
+                        </div>
                     </div>
                 </div>
             </header>

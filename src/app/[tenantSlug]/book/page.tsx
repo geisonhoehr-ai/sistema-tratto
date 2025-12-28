@@ -16,7 +16,8 @@ import {
     ArrowRight,
     MapPin,
     Phone,
-    ShieldCheck
+    ShieldCheck,
+    ShoppingBag
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -219,9 +220,20 @@ export default function BookingPage() {
                             </div>
                         </div>
                     </div>
-                    <Button variant="outline" size="icon" className="rounded-full border-slate-200 dark:border-zinc-800">
-                        <Phone className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/${tenantSlug}/shop`)}
+                            className="rounded-full border-slate-200 dark:border-zinc-800 font-bold text-xs gap-2"
+                        >
+                            <ShoppingBag className="w-4 h-4" />
+                            Loja
+                        </Button>
+                        <Button variant="outline" size="icon" className="rounded-full border-slate-200 dark:border-zinc-800">
+                            <Phone className="w-4 h-4" />
+                        </Button>
+                    </div>
                 </div>
             </header>
 

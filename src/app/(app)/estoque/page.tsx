@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { inventory as initialInventory, type Product } from "@/mocks/inventory"
 import {
     Package,
     Plus,
@@ -14,8 +15,10 @@ import {
     AlertTriangle,
     ArrowRight,
     Barcode,
-    Tag
+    Tag,
+    Globe
 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,17 +28,11 @@ import { cn } from "@/lib/utils"
 
 export default function EstoquePage() {
     // Mock inventory data
-    const [products, setProducts] = useState([
-        { id: 1, name: "Shampoo Premium 500ml", category: "Cabelo", price: 85.00, stock: 12, minStock: 5 },
-        { id: 2, name: "Condicionador Hidratante", category: "Cabelo", price: 75.00, stock: 8, minStock: 5 },
-        { id: 3, name: "Esmalte Tons Pastéis", category: "Unhas", price: 15.00, stock: 45, minStock: 10 },
-        { id: 4, name: "Cera Depilatória Morna", category: "Estética", price: 45.00, stock: 3, minStock: 5 },
-        { id: 5, name: "Óleo de Barba 30ml", category: "Barba", price: 55.00, stock: 15, minStock: 5 },
-    ])
+    const [products, setProducts] = useState(initialInventory)
 
-    const [cart, setCart] = useState<{ productId: number, quantity: number }[]>([])
+    const [cart, setCart] = useState<{ productId: string, quantity: number }[]>([])
 
-    const addToCart = (productId: number) => {
+    const addToCart = (productId: string) => {
         const existing = cart.find(item => item.productId === productId)
         if (existing) {
             setCart(cart.map(item => item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item))
@@ -44,7 +41,7 @@ export default function EstoquePage() {
         }
     }
 
-    const removeFromCart = (productId: number) => {
+    const removeFromCart = (productId: string) => {
         const item = cart.find(i => i.productId === productId)
         if (item && item.quantity > 1) {
             setCart(cart.map(i => i.productId === productId ? { ...i, quantity: i.quantity - 1 } : i))
@@ -247,8 +244,17 @@ export default function EstoquePage() {
                                             )}
                                         </div>
                                         <div className="text-center min-w-[80px]">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Estoque</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Stock</p>
                                             <p className="text-xl font-black text-slate-900 dark:text-white">{product.stock}</p>
+                                        </div>
+                                        <div className="flex flex-col items-center gap-1 min-w-[100px]">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Loja Online</p>
+                                            <Switch
+                                                checked={product.showOnline}
+                                                onCheckedChange={(checked) => {
+                                                    setProducts(products.map(p => p.id === product.id ? { ...p, showOnline: checked } : p))
+                                                }}
+                                            />
                                         </div>
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button variant="ghost" size="icon" className="rounded-xl bg-slate-50 dark:bg-zinc-800 text-slate-400 hover:text-primary">
