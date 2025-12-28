@@ -221,7 +221,7 @@ export default function AgendaPage() {
                                                         style={{ height: `${style.serviceHeight}px` }}
                                                     >
                                                         <p className="font-semibold text-xs truncate">
-                                                            {apt.time} - {apt.clientName}
+                                                            {apt.time} - {apt.customer}
                                                         </p>
                                                         <p className="text-xs truncate opacity-80">
                                                             {service?.name}

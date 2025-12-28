@@ -27,7 +27,9 @@ export default function PlanosPage() {
         maxEmployees: 1,
         maxAppointmentsPerMonth: 100,
         features: [] as string[],
-        popular: false
+        popular: false,
+        billingCycle: 'monthly' as 'monthly' | 'yearly',
+        status: 'active' as 'active' | 'inactive'
     })
 
     const [newFeature, setNewFeature] = useState("")
@@ -41,7 +43,9 @@ export default function PlanosPage() {
             maxEmployees: formData.maxEmployees,
             maxAppointmentsPerMonth: formData.maxAppointmentsPerMonth,
             features: formData.features,
-            popular: formData.popular
+            popular: formData.popular,
+            billingCycle: formData.billingCycle,
+            status: formData.status
         }
 
         setPlans([...plans, newPlan])
@@ -75,7 +79,9 @@ export default function PlanosPage() {
             maxEmployees: plan.maxEmployees,
             maxAppointmentsPerMonth: plan.maxAppointmentsPerMonth,
             features: [...plan.features],
-            popular: plan.popular
+            popular: plan.popular || false,
+            billingCycle: plan.billingCycle,
+            status: plan.status
         })
         setShowEditPlan(true)
     }
@@ -93,7 +99,9 @@ export default function PlanosPage() {
             maxEmployees: 1,
             maxAppointmentsPerMonth: 100,
             features: [],
-            popular: false
+            popular: false,
+            billingCycle: 'monthly',
+            status: 'active'
         })
         setSelectedPlan(null)
     }

@@ -51,7 +51,8 @@ export default function EmpresasPage() {
         email: "",
         phone: "",
         address: "",
-        planId: "starter"
+        planId: "starter",
+        logo: "🏢"
     })
 
     const filteredCompanies = companies.filter(company =>
