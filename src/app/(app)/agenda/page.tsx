@@ -1,12 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { format, addDays, parseISO, isSameDay } from "date-fns"
+import { useMemo, useState, useEffect } from "react"
+import { format, addDays, parseISO, isSameDay, differenceInMinutes, isAfter } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Filter, Users as UsersIcon, Clock } from "lucide-react"
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Filter, Users as UsersIcon, Clock, Activity, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
+import { useTenant } from "@/contexts/tenant-context"
+import { services } from "@/mocks/services"
+import { Progress } from "@/components/ui/progress"
 import {
     Select,
     SelectContent,
@@ -27,7 +30,43 @@ export default function AgendaPage() {
     const [currentDate, setCurrentDate] = useState(new Date())
     const [selectedEmployee, setSelectedEmployee] = useState<string>("all")
     const [currentTime, setCurrentTime] = useState(new Date())
+    const [viewMode, setViewMode] = useState<"grid" | "timeline">("grid")
     const { currentTenant } = useTenant()
+    const timelineSlots = useMemo(() => {
+        const slots: {
+            employeeId: string
+            employeeName: string
+            serviceName: string | undefined
+            customer: string
+            start: Date
+            end: Date
+            duration: number
+            status: string
+            utilization: number
+        }[] = []
+
+        tenantEmployees.forEach((employee) => {
+            const employeeAppointments = tenantAppointments.filter((apt) => apt.staffId === employee.id && isSameDay(apt.startDate, currentDate))
+            employeeAppointments.forEach((apt) => {
+                const end = new Date(apt.startDate.getTime() + apt.duration * 60000)
+                const totalWindow = differenceInMinutes(end, apt.startDate)
+                const utilization = Math.min(100, Math.round((apt.duration / totalWindow) * 100))
+                slots.push({
+                    employeeId: employee.id,
+                    employeeName: employee.name,
+                    serviceName: apt.service?.name,
+                    customer: apt.customer,
+                    start: apt.startDate,
+                    end,
+                    duration: apt.duration,
+                    status: apt.status,
+                    utilization,
+                })
+            })
+        })
+
+        return slots.sort((a, b) => a.start.getTime() - b.start.getTime())
+    }, [tenantEmployees, tenantAppointments, currentDate])
 
     // Update real-time indicator every minute
     useEffect(() => {
@@ -36,14 +75,20 @@ export default function AgendaPage() {
     }, [])
 
     const tenantEmployees = employees.filter(e => e.tenantId === currentTenant.id)
-    const tenantAppointments = appointments.filter(apt => apt.tenantId === currentTenant.id)
+    const tenantAppointments = appointments
+        .filter(apt => apt.tenantId === currentTenant.id)
+        .map((apt) => ({
+            ...apt,
+            service: services.find((service) => service.id === apt.serviceId),
+            startDate: parseISO(apt.date),
+        }))
 
     const nextDay = () => setCurrentDate(addDays(currentDate, 1))
     const prevDay = () => setCurrentDate(addDays(currentDate, -1))
     const today = () => setCurrentDate(new Date())
 
     const filteredAppointments = tenantAppointments.filter(apt => {
-        const aptDate = parseISO(apt.date)
+        const aptDate = apt.startDate
         const matchesDate = isSameDay(aptDate, currentDate)
         const matchesEmployee = selectedEmployee === "all" || apt.staffId === selectedEmployee
         return matchesDate && matchesEmployee
@@ -167,12 +212,31 @@ export default function AgendaPage() {
                             </Select>
                         </div>
                     </div>
+                    <div className="flex items-center gap-2 bg-slate-100 dark:bg-zinc-800 rounded-2xl p-1">
+                        <Button
+                            size="sm"
+                            variant={viewMode === "grid" ? "default" : "ghost"}
+                            className="rounded-xl"
+                            onClick={() => setViewMode("grid")}
+                        >
+                            Grade
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant={viewMode === "timeline" ? "default" : "ghost"}
+                            className="rounded-xl"
+                            onClick={() => setViewMode("timeline")}
+                        >
+                            Timeline
+                        </Button>
+                    </div>
                 </div>
             </Card>
 
             {/* Calendar Grid Container */}
-            <div className="relative group/agenda">
-                <Card className="rounded-[32px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl overflow-hidden border border-white/20 dark:border-white/5">
+            {viewMode === "grid" ? (
+                <div className="relative group/agenda">
+                    <Card className="rounded-[32px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl overflow-hidden border border-white/20 dark:border-white/5">
                     <div className="flex h-[900px] overflow-hidden">
                         {/* Time Column */}
                         <div className="w-24 border-r border-black/5 dark:border-white/5 bg-black/[0.02] dark:bg-white/[0.02] sticky left-0 z-20 backdrop-blur-md">
@@ -368,9 +432,66 @@ export default function AgendaPage() {
                                 })}
                             </AnimatePresence>
                         </div>
+                    </Card>
+                </div>
+            ) : (
+                <Card className="rounded-[32px] border-none shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl overflow-hidden border border-white/20 dark:border-white/5">
+                    <div className="p-6 space-y-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Linha do tempo</p>
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white">Status em tempo real</h3>
+                                <p className="text-sm text-slate-500 dark:text-zinc-400">Fluxo unificado de todos os profissionais.</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Badge className="gap-1 bg-emerald-500/10 text-emerald-600">
+                                    <Sparkles className="w-3 h-3" />
+                                    {timelineSlots.length} eventos
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                            {timelineSlots.length === 0 && (
+                                <div className="text-center py-20 text-slate-400">
+                                    Nenhum evento programado para hoje.
+                                </div>
+                            )}
+                            {timelineSlots.map((slot, index) => (
+                                <div
+                                    key={`${slot.employeeId}-${slot.start.toISOString()}-${index}`}
+                                    className="group flex flex-col md:flex-row md:items-center gap-4 rounded-3xl border border-slate-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 p-4 hover:shadow-lg transition-shadow"
+                                >
+                                    <div className="flex items-center gap-4 min-w-[180px]">
+                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary font-black flex items-center justify-center">
+                                            {slot.employeeName.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black text-slate-900 dark:text-white">{slot.employeeName}</p>
+                                            <p className="text-xs text-slate-500 dark:text-zinc-400">{format(slot.start, "HH:mm", { locale: ptBR })} • {slot.duration}m</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline" className="rounded-full border-slate-200 dark:border-zinc-700 text-xs capitalize">
+                                                {slot.status === "confirmed" ? "Confirmado" : slot.status === "completed" ? "Finalizado" : "Pendente"}
+                                            </Badge>
+                                            <p className="font-medium text-slate-500 dark:text-zinc-400">{slot.customer}</p>
+                                        </div>
+                                        <p className="text-sm font-bold text-slate-900 dark:text-white">{slot.serviceName || "Serviço"}</p>
+                                        <div className="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-widest">
+                                            <Activity className="w-3 h-3" />
+                                            Utilização {slot.utilization}%
+                                        </div>
+                                        <Progress value={slot.utilization} className="h-1.5" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </Card>
-            </div>
+            )}
 
             {/* Legend - Floating Style */}
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40">
