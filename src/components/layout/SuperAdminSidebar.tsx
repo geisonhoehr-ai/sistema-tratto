@@ -15,7 +15,9 @@ import {
     Megaphone,
     Smartphone,
     Scissors,
-    LifeBuoy
+    LifeBuoy,
+    Zap,
+    ShieldCheck
 } from "lucide-react"
 
 const superAdminMenuItems = [
@@ -24,6 +26,7 @@ const superAdminMenuItems = [
     { icon: Package, label: "Planos", href: "/super-admin/planos" },
     { icon: CreditCard, label: "SA Financeiro", href: "/super-admin/financeiro" },
     { icon: LifeBuoy, label: "Suporte", href: "/super-admin/suporte" },
+    { icon: Zap, label: "Playbooks", href: "/super-admin/playbooks" },
     { icon: ShieldCheck, label: "Auditoria", href: "/super-admin/auditoria" },
     { icon: Settings, label: "SA Configs", href: "/super-admin/configuracoes" },
 ]
