@@ -811,6 +811,15 @@ export default function BookingPage() {
                         </Button>
                         <Button
                             variant="outline"
+                            size="sm"
+                            onClick={() => router.push(`/${tenantSlug}/login`)}
+                            className="rounded-full border-gray-200 dark:border-zinc-800 font-semibold text-xs gap-2 hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-colors"
+                        >
+                            <User className="w-4 h-4" />
+                            Minha Conta
+                        </Button>
+                        <Button
+                            variant="outline"
                             size="icon"
                             className="rounded-full border-gray-200 dark:border-zinc-800 hover:bg-gray-50"
                             onClick={handleWhatsAppContact}

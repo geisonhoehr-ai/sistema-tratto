@@ -63,7 +63,7 @@ export default function LoginPage() {
                             </div>
                         </div>
                         <h1 className="text-4xl font-black text-gray-900 mb-2">BeautyFlow</h1>
-                        <p className="text-gray-600 font-medium">Sistema de gestão para salões de beleza</p>
+                        <p className="text-gray-600 font-medium">Área para Empresas e Profissionais</p>
                     </div>
 
                     {/* Login Card */}
@@ -147,15 +147,9 @@ export default function LoginPage() {
                         {/* Demo credentials */}
                         <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
                             <p className="text-xs font-bold text-blue-900 mb-3 uppercase tracking-wider">
-                                Usuários de teste
+                                Contas de teste (Empresas/Staff)
                             </p>
                             <div className="space-y-3 text-xs">
-                                <div className="space-y-1">
-                                    <p className="font-semibold text-blue-900">Super Admin</p>
-                                    <p className="text-blue-700">geisonhoehr@gmail.com</p>
-                                    <p className="text-blue-600">Senha: 123456</p>
-                                </div>
-                                <div className="h-px bg-blue-200" />
                                 <div className="space-y-1">
                                     <p className="font-semibold text-blue-900">Empresa 1 (Beleza Pura)</p>
                                     <p className="text-blue-700">gerente@belezapura.com</p>
