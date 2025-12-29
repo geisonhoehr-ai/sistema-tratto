@@ -752,13 +752,6 @@ export default function BookingPage() {
                                                 R$ {combo.price}
                                             </Badge>
                                         </div>
-                                        <div className="flex flex-wrap gap-1">
-                                            {combo.items.map(item => (
-                                                <Badge key={item} variant="outline" className="text-[10px] rounded-full">
-                                                    {item}
-                                                </Badge>
-                                            ))}
-                                        </div>
                                         <Button className="rounded-xl w-full" variant="outline">
                                             Reservar combo
                                         </Button>
