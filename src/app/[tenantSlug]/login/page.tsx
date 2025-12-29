@@ -79,7 +79,7 @@ export default function CustomerLoginPage() {
     const currentStepIndex = loginSteps.findIndex(stepItem => stepItem.id === stage)
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center p-6 font-sans relative overflow-hidden">
+        <div className="fixed inset-0 bg-white dark:bg-zinc-950 flex items-center justify-center p-6 font-sans overflow-auto">
             {/* Background decorations */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-40" />
             <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />

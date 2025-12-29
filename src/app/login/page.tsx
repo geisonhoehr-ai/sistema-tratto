@@ -42,7 +42,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden p-4">
+        <div className="fixed inset-0 flex items-center justify-center bg-white overflow-auto p-4">
             {/* Background decorations */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-40" />
             <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
