@@ -212,10 +212,10 @@ export default function BookingPage() {
 
     if (!tenant && isLoadingData) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-950">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950">
                 <div className="text-center space-y-3">
                     <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                    <p className="text-slate-500 dark:text-zinc-400 font-medium">Carregando experiência de agendamento...</p>
+                    <p className="text-gray-600 dark:text-zinc-400 font-medium">Carregando experiência de agendamento...</p>
                 </div>
             </div>
         )
@@ -223,10 +223,10 @@ export default function BookingPage() {
 
     if (!tenant) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
+            <div className="min-h-screen flex items-center justify-center bg-white dark:bg-zinc-950 p-6 text-center">
                 <div className="space-y-4 max-w-md">
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white">Ops! Salão não encontrado</h1>
-                    <p className="text-slate-500 dark:text-zinc-400">Verifique se o link do agendamento está correto ou fale com o suporte.</p>
+                    <h1 className="text-3xl font-black text-gray-900 dark:text-white">Ops! Salão não encontrado</h1>
+                    <p className="text-gray-600 dark:text-zinc-400">Verifique se o link do agendamento está correto ou fale com o suporte.</p>
                     <Button onClick={() => router.push("/")}>Voltar para o início</Button>
                 </div>
             </div>
@@ -663,7 +663,7 @@ export default function BookingPage() {
 
     if (step === 'success') {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-white dark:bg-zinc-950 flex items-center justify-center p-6">
                 <motion.div
                     initial="hidden" animate="visible" variants={containerVariants}
                     className="max-w-md w-full text-center space-y-8"
@@ -675,20 +675,20 @@ export default function BookingPage() {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Agendado!</h1>
-                        <p className="text-slate-500 dark:text-zinc-400 font-medium">Tudo certo, {clientData.name}. Te esperamos lá!</p>
+                    <div className="space-y-3">
+                        <h1 className="text-5xl font-black tracking-tight bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">Agendado!</h1>
+                        <p className="text-xl text-gray-600 dark:text-zinc-400 font-medium">Tudo certo, {clientData.name}. Te esperamos lá! 🎉</p>
                     </div>
 
                     <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 overflow-hidden relative">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12" />
                         <div className="relative z-10 flex flex-col items-center gap-4 text-center">
-                        <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-lg font-black text-primary">
+                        <div className="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center text-lg font-black text-primary">
                             {tenantBadge}
                             </div>
                             <div className="space-y-1">
-                                <h3 className="font-bold text-slate-900 dark:text-white">{selectedService?.name}</h3>
-                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                <h3 className="font-bold text-gray-900 dark:text-white">{selectedService?.name}</h3>
+                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                                     {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })} às {selectedTime}
                                 </p>
                             </div>
@@ -696,7 +696,7 @@ export default function BookingPage() {
                                 <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-primary/5 px-4 py-2 rounded-full border border-primary/10">
                                     Voucher: #{voucherCode}
                                 </span>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Apresente este código na recepção.</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Apresente este código na recepção.</p>
                             </div>
                         </div>
                     </Card>
@@ -718,15 +718,15 @@ export default function BookingPage() {
                                             <Sparkles className="w-5 h-5 text-primary" />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-slate-900 dark:text-white leading-tight">Que tal aproveitar?</h4>
-                                            <p className="text-xs text-slate-500 dark:text-zinc-400">Vimos que há um horário vago para {upsellService.service.name.toLowerCase()} logo após o seu.</p>
+                                            <h4 className="font-bold text-gray-900 dark:text-white leading-tight">Que tal aproveitar?</h4>
+                                            <p className="text-xs text-gray-600 dark:text-zinc-400">Vimos que há um horário vago para {upsellService.service.name.toLowerCase()} logo após o seu.</p>
                                         </div>
                                     </div>
 
                                     <div className="p-4 rounded-2xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-white dark:border-zinc-800 flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <p className="text-sm font-bold text-slate-900 dark:text-white">{upsellService.service.name}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase">Às {upsellService.time} • R$ {upsellService.service.price},00</p>
+                                            <p className="text-sm font-bold text-gray-900 dark:text-white">{upsellService.service.name}</p>
+                                            <p className="text-[10px] font-bold text-gray-500 uppercase">Às {upsellService.time} • R$ {upsellService.service.price},00</p>
                                         </div>
                                         <Button size="sm" className="rounded-xl bg-primary hover:bg-primary/90 text-white font-bold h-10 px-6 active:scale-95 transition-all">
                                             Adicionar
@@ -739,14 +739,14 @@ export default function BookingPage() {
 
                     {suggestedCombos.length > 0 && (
                         <div className="space-y-3 w-full">
-                            <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-slate-400">Complete sua experiência</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-gray-500">Complete sua experiência</h3>
                             <div className="grid gap-3">
                                 {suggestedCombos.map(combo => (
-                                    <Card key={combo.id} className="p-4 rounded-2xl border border-slate-100 dark:border-zinc-800 text-left flex flex-col gap-3">
+                                    <Card key={combo.id} className="p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 text-left flex flex-col gap-3">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm font-bold text-slate-900 dark:text-white">{combo.name}</p>
-                                                <p className="text-xs text-slate-500">{combo.description}</p>
+                                                <p className="text-sm font-bold text-gray-900 dark:text-white">{combo.name}</p>
+                                                <p className="text-xs text-gray-600">{combo.description}</p>
                                             </div>
                                             <Badge variant="secondary" className="rounded-full text-[10px] uppercase tracking-widest">
                                                 R$ {combo.price}
@@ -765,13 +765,13 @@ export default function BookingPage() {
                         <Button
                             onClick={() => router.push(`/${tenantSlug}/profile?email=${clientData.email}`)}
                             variant="outline"
-                            className="flex-1 h-14 rounded-2xl border-slate-200 font-bold text-slate-600"
+                            className="flex-1 h-14 rounded-full border-2 border-gray-200 font-semibold text-gray-700 hover:bg-gray-50 transition-all"
                         >
                             Ver Meus Agendamentos
                         </Button>
                         <Button
                             onClick={() => router.push(`/${tenantSlug}/book`)}
-                            className="flex-1 h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold"
+                            className="flex-1 h-14 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold shadow-lg shadow-blue-500/30 transition-all"
                         >
                             Novo Agendamento
                         </Button>
@@ -783,19 +783,19 @@ export default function BookingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 font-sans selection:bg-primary/20">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 font-sans selection:bg-primary/20">
             {/* Elegant Header */}
-            <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-zinc-800/50 px-6 py-4">
+            <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border-b border-gray-100 dark:border-zinc-800 px-6 py-4 shadow-sm">
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white text-xl shadow-lg shadow-primary/20">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-blue-500/30">
                             {tenantBadge}
                         </div>
                         <div>
-                            <h1 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">{tenant.fullName}</h1>
-                            <div className="flex items-center gap-2 text-slate-400 dark:text-zinc-500 text-xs font-semibold uppercase tracking-widest">
+                            <h1 className="text-xl font-black tracking-tight text-gray-900 dark:text-white">{tenant.fullName}</h1>
+                            <div className="flex items-center gap-2 text-gray-500 dark:text-zinc-500 text-xs font-medium">
                                 <MapPin className="w-3 h-3" />
-                                {tenant.name} • Centro
+                                {tenant.name}
                             </div>
                         </div>
                     </div>
@@ -804,7 +804,7 @@ export default function BookingPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => router.push(`/${tenantSlug}/shop`)}
-                            className="rounded-full border-slate-200 dark:border-zinc-800 font-bold text-xs gap-2"
+                            className="rounded-full border-gray-200 dark:border-zinc-800 font-semibold text-xs gap-2 hover:bg-gray-50"
                         >
                             <ShoppingBag className="w-4 h-4" />
                             Loja
@@ -812,7 +812,7 @@ export default function BookingPage() {
                         <Button
                             variant="outline"
                             size="icon"
-                            className="rounded-full border-slate-200 dark:border-zinc-800"
+                            className="rounded-full border-gray-200 dark:border-zinc-800 hover:bg-gray-50"
                             onClick={handleWhatsAppContact}
                         >
                             <Phone className="w-4 h-4" />
@@ -831,10 +831,10 @@ export default function BookingPage() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/70">Precisa de ajuda?</p>
-                            <p className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
+                            <p className="text-base sm:text-lg font-black text-gray-900 dark:text-white leading-tight">
                                 Concierge BeautyFlow disponível para você
                             </p>
-                            <p className="text-sm text-slate-500 dark:text-zinc-400">
+                            <p className="text-sm text-gray-600 dark:text-zinc-400">
                                 Resposta média em menos de 3 minutos via WhatsApp.
                             </p>
                         </div>
@@ -857,7 +857,7 @@ export default function BookingPage() {
                                     "rounded-2xl border bg-white/80 dark:bg-zinc-900/70 p-4 transition-all",
                                     isCompleted && "border-primary/40 shadow-lg shadow-primary/10",
                                     isCurrent && "ring-2 ring-primary/40",
-                                    !isCompleted && !isCurrent && "border-slate-100 dark:border-zinc-800"
+                                    !isCompleted && !isCurrent && "border-gray-100 dark:border-zinc-800"
                                 )}
                             >
                                 <div className="flex items-center gap-3">
@@ -868,16 +868,16 @@ export default function BookingPage() {
                                                 ? "bg-primary text-white border-primary"
                                                 : isCurrent
                                                     ? "bg-primary/10 text-primary border-primary/20"
-                                                    : "bg-white text-slate-400 border-slate-200 dark:bg-zinc-900 dark:border-zinc-800"
+                                                    : "bg-white text-gray-500 border-gray-200 dark:bg-zinc-900 dark:border-zinc-800"
                             )}
                                     >
                                         <Icon className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-zinc-400">
+                                        <p className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-zinc-400">
                                             {STEP_DETAILS[flowStep].label}
                                         </p>
-                                        <p className="text-[11px] text-slate-400 dark:text-zinc-500">
+                                        <p className="text-[11px] text-gray-500 dark:text-zinc-500">
                                             {STEP_DETAILS[flowStep].description}
                                         </p>
                                     </div>
@@ -896,8 +896,8 @@ export default function BookingPage() {
                             className="space-y-6"
                         >
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">O que vamos fazer hoje?</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Selecione o serviço desejado para agendar.</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">O que vamos fazer hoje?</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Selecione o serviço desejado para agendar.</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -909,24 +909,24 @@ export default function BookingPage() {
                                             "p-6 rounded-[2rem] border-2 transition-all cursor-pointer group active:scale-[0.98]",
                                             selectedService?.id === service.id
                                                 ? "border-primary bg-primary/[0.03] shadow-xl shadow-primary/10"
-                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-slate-200 dark:hover:border-zinc-800 shadow-sm"
+                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-800 shadow-sm"
                                         )}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="space-y-1">
-                                                <h3 className="font-bold text-lg text-slate-900 dark:text-white">{service.name}</h3>
-                                                <p className="text-sm text-slate-500 dark:text-zinc-400 line-clamp-2">{service.description}</p>
+                                                <h3 className="font-bold text-lg text-gray-900 dark:text-white">{service.name}</h3>
+                                                <p className="text-sm text-gray-600 dark:text-zinc-400 line-clamp-2">{service.description}</p>
                                             </div>
                                             {selectedService?.id === service.id && (
                                                 <CheckCircle2 className="w-6 h-6 text-primary" />
                                             )}
                                         </div>
                                         <div className="mt-6 flex items-center justify-between">
-                                            <div className="flex gap-4 text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
+                                            <div className="flex gap-4 text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
                                                 <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {service.durationMinutes}m</span>
                                                 <span className="flex items-center gap-1"><Sparkles className="w-3 h-3" /> R$ {service.price}</span>
                                             </div>
-                                            <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                                 <ChevronRight className="w-4 h-4" />
                                             </div>
                                         </div>
@@ -949,8 +949,8 @@ export default function BookingPage() {
                                 </Button>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Escolha um especialista</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Quem você gostaria que realizasse seu atendimento?</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Escolha um especialista</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Quem você gostaria que realizasse seu atendimento?</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -965,7 +965,7 @@ export default function BookingPage() {
                                             "p-6 rounded-[2.5rem] border-2 transition-all cursor-pointer text-center space-y-4 group active:scale-[0.98]",
                                             selectedEmployee?.id === emp.id
                                                 ? "border-primary bg-primary/[0.03] shadow-xl shadow-primary/10"
-                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-slate-200 dark:hover:border-zinc-800 shadow-sm"
+                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-800 shadow-sm"
                                         )}
                                     >
                                         <div className="relative mx-auto w-20 h-20 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden border-4 border-white dark:border-zinc-900 shadow-md">
@@ -977,7 +977,7 @@ export default function BookingPage() {
                                             )}
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-slate-900 dark:text-white">{emp.name}</h3>
+                                            <h3 className="font-bold text-gray-900 dark:text-white">{emp.name}</h3>
                                             <Badge variant="outline" className="mt-1 text-[10px] uppercase font-bold tracking-tighter opacity-70">Expert</Badge>
                                         </div>
                                     </Card>
@@ -999,8 +999,8 @@ export default function BookingPage() {
                                 </Button>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Quando será sua visita?</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Selecione o melhor dia e horário para você.</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Quando será sua visita?</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Selecione o melhor dia e horário para você.</p>
                             </div>
 
                             <div className="space-y-6">
@@ -1034,9 +1034,9 @@ export default function BookingPage() {
 
                                 {/* Time Grid */}
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400">Horários disponíveis</h4>
+                                    <h4 className="text-sm font-bold uppercase tracking-widest text-gray-500">Horários disponíveis</h4>
                                     {timeSlots.length === 0 ? (
-                                        <div className="rounded-2xl border border-dashed border-slate-200 dark:border-zinc-800 p-6 text-center text-sm text-slate-500 dark:text-zinc-400">
+                                        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-zinc-800 p-6 text-center text-sm text-gray-600 dark:text-zinc-400">
                                             Nenhum horário disponível neste dia. Escolha outra data ou profissional.
                                         </div>
                                     ) : (
@@ -1050,7 +1050,7 @@ export default function BookingPage() {
                                                     "h-14 rounded-2xl font-bold transition-all",
                                                     activeTime === time
                                                         ? "bg-primary text-white shadow-lg shadow-primary/20 scale-[1.05]"
-                                                        : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white hover:bg-slate-50"
+                                                        : "bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white hover:bg-white"
                                                 )}
                                             >
                                                 {time}
@@ -1076,16 +1076,16 @@ export default function BookingPage() {
                                 </Button>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Falta pouco!</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Preencha seus dados para finalizarmos o agendamento.</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Falta pouco!</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Preencha seus dados para finalizarmos o agendamento.</p>
                             </div>
 
                             <div className="space-y-6 max-w-lg">
                                 {/* CPF Field - Primary ID */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">CPF (Identificação)</label>
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">CPF (Identificação)</label>
                                     <div className="relative group">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">
                                             <ShieldCheck className="w-5 h-5" />
                                         </div>
                                         <input
@@ -1124,7 +1124,7 @@ export default function BookingPage() {
                                                     return { ...prev, cpf: val, isExisting: false }
                                                 })
                                             }}
-                                            className="w-full h-16 pl-12 pr-4 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                            className="w-full h-16 pl-12 pr-4 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                         />
                                     </div>
                                 </div>
@@ -1143,13 +1143,13 @@ export default function BookingPage() {
                                                         Cliente Identificado: {clientData.name}
                                                     </Badge>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Sua Senha</label>
+                                                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Sua Senha</label>
                                                         <input
                                                             type="password"
                                                             placeholder="••••••••"
                                                             value={clientData.password}
                                                             onChange={(e) => setClientData({ ...clientData, password: e.target.value })}
-                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                 </div>
@@ -1159,17 +1159,17 @@ export default function BookingPage() {
                                                         Primeiro Acesso: Criar Perfil
                                                     </Badge>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Nome Completo</label>
+                                                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Nome Completo</label>
                                                         <input
                                                             type="text"
                                                             placeholder="Como gostaria de ser chamado?"
                                                             value={clientData.name}
                                                             onChange={(e) => setClientData({ ...clientData, name: e.target.value })}
-                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">E-mail</label>
+                                                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">E-mail</label>
                                                         <input
                                                             type="email"
                                                             placeholder="seu@email.com"
@@ -1192,27 +1192,27 @@ export default function BookingPage() {
                                                                     return { ...prev, email: val }
                                                                 })
                                                             }}
-                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">WhatsApp</label>
+                                                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">WhatsApp</label>
                                                         <input
                                                             type="tel"
                                                             placeholder="(11) 99999-0000"
                                                             value={clientData.phone}
                                                             onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
-                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                     <div className="space-y-2">
-                                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Criar Senha para Acesso</label>
+                                                        <label className="text-xs font-bold uppercase tracking-widest text-gray-500 ml-1">Criar Senha para Acesso</label>
                                                         <input
                                                             type="password"
                                                             placeholder="Mínimo 6 caracteres"
                                                             value={clientData.password}
                                                             onChange={(e) => setClientData({ ...clientData, password: e.target.value })}
-                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-slate-900 dark:text-white"
+                                                            className="w-full h-16 px-6 rounded-2xl border-2 border-transparent bg-white dark:bg-zinc-900 shadow-sm focus:border-primary focus:ring-0 transition-all font-medium text-gray-900 dark:text-white"
                                                         />
                                                     </div>
                                                 </div>
@@ -1233,17 +1233,17 @@ export default function BookingPage() {
                                 </p>
                             </Card>
 
-                            <Card className="p-6 rounded-[2rem] border border-slate-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900 space-y-4">
+                            <Card className="p-6 rounded-[2rem] border border-gray-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900 space-y-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">Portal do cliente</p>
-                                        <p className="text-lg font-black text-slate-900 dark:text-white">Login obrigatório antes de confirmar</p>
+                                        <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Portal do cliente</p>
+                                        <p className="text-lg font-black text-gray-900 dark:text-white">Login obrigatório antes de confirmar</p>
                                     </div>
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-zinc-400">
+                                <p className="text-sm text-gray-600 dark:text-zinc-400">
                                     Garantimos sua segurança e evitamos agendamentos falsos. Após o login, enviaremos confirmações, lembretes,
                                     promoções e você terá acesso ao histórico completo no seu portal.
                                 </p>
@@ -1288,13 +1288,13 @@ export default function BookingPage() {
                                             <Button
                                                 type="button"
                                                 variant="ghost"
-                                                className="h-14 rounded-2xl text-slate-500 hover:text-primary"
+                                                className="h-14 rounded-2xl text-gray-600 hover:text-primary"
                                                 onClick={handleWhatsAppContact}
                                             >
                                                 Precisa de ajuda?
                                             </Button>
                                         </div>
-                                        <p className="text-xs text-slate-400 font-medium">
+                                        <p className="text-xs text-gray-500 font-medium">
                                             Ao se identificar, você aceita receber notificações sobre confirmações, alterações e promoções do seu salão favorito.
                                         </p>
                                     </div>
@@ -1316,53 +1316,53 @@ export default function BookingPage() {
                                 </Button>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Confirme seu agendamento</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Revise os detalhes antes de finalizar.</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Confirme seu agendamento</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Revise os detalhes antes de finalizar.</p>
                             </div>
 
                             <Card className="rounded-[2.5rem] border-none shadow-2xl bg-white dark:bg-zinc-900 p-8 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                                     <div className="space-y-6">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Serviço</p>
-                                            <p className="text-xl font-extrabold text-slate-900 dark:text-white">{selectedService?.name}</p>
-                                            <p className="text-slate-500 text-sm font-medium">{selectedService?.durationMinutes} minutos • R$ {selectedService?.price}</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Serviço</p>
+                                            <p className="text-xl font-extrabold text-gray-900 dark:text-white">{selectedService?.name}</p>
+                                            <p className="text-gray-600 text-sm font-medium">{selectedService?.durationMinutes} minutos • R$ {selectedService?.price}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Profissional</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Profissional</p>
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-slate-400">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-gray-500">
                                                     {selectedEmployee?.name.charAt(0)}
                                                 </div>
-                                                <p className="text-lg font-bold text-slate-900 dark:text-white">{selectedEmployee?.name}</p>
+                                                <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedEmployee?.name}</p>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="space-y-6">
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Data e Hora</p>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Data e Hora</p>
                                             <div className="flex items-center gap-3">
                                                 <CalendarIcon className="w-5 h-5 text-primary" />
-                                                <p className="text-lg font-bold text-slate-900 dark:text-white">
+                                                <p className="text-lg font-bold text-gray-900 dark:text-white">
                                                     {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-3 mt-2">
                                                 <Clock className="w-5 h-5 text-primary" />
-                                                <p className="text-lg font-bold text-slate-900 dark:text-white">{selectedTime}</p>
+                                                <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedTime}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-8 border-t border-slate-100 dark:border-zinc-800">
+                                <div className="pt-8 border-t border-gray-100 dark:border-zinc-800">
                                     <div className="flex justify-between items-end">
                                         <div className="space-y-1">
-                                            <p className="text-sm font-medium text-slate-500">Valor Total</p>
+                                            <p className="text-sm font-medium text-gray-600">Valor Total</p>
                                             <p className="text-3xl font-black text-primary">R$ {selectedService?.price},00</p>
                                         </div>
-                                        <div className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        <div className="text-sm font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
                                             <ShieldCheck className="w-4 h-4 text-emerald-500" />
                                             Seguro
                                         </div>
@@ -1385,8 +1385,8 @@ export default function BookingPage() {
                                 </Button>
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Forma de pagamento</h2>
-                                <p className="text-slate-500 dark:text-zinc-400">Como você prefere pagar pelo serviço?</p>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Forma de pagamento</h2>
+                                <p className="text-gray-600 dark:text-zinc-400">Como você prefere pagar pelo serviço?</p>
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
@@ -1398,24 +1398,24 @@ export default function BookingPage() {
                                             "p-6 rounded-[2rem] border-2 transition-all cursor-pointer flex items-center justify-between group active:scale-[0.98]",
                                             selectedPaymentMethod === method.id
                                                 ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/5"
-                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-slate-200 dark:hover:border-zinc-800 shadow-sm"
+                                                : "border-transparent bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-800 shadow-sm"
                                         )}
                                     >
                                         <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform text-slate-400">
+                                    <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center group-hover:scale-110 transition-transform text-gray-500">
                                         <method.icon className={cn(
                                             "w-6 h-6",
-                                            selectedPaymentMethod === method.id ? "text-primary" : "text-slate-400"
+                                            selectedPaymentMethod === method.id ? "text-primary" : "text-gray-500"
                                         )} />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-slate-900 dark:text-white leading-tight">{method.label}</h4>
-                                                <p className="text-xs text-slate-500 dark:text-zinc-400">{method.description}</p>
+                                                <h4 className="font-bold text-gray-900 dark:text-white leading-tight">{method.label}</h4>
+                                                <p className="text-xs text-gray-600 dark:text-zinc-400">{method.description}</p>
                                             </div>
                                         </div>
                                         <div className={cn(
                                             "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                                            selectedPaymentMethod === method.id ? "border-primary bg-primary" : "border-slate-200"
+                                            selectedPaymentMethod === method.id ? "border-primary bg-primary" : "border-gray-200"
                                         )}>
                                             {selectedPaymentMethod === method.id && <div className="w-2 h-2 bg-white rounded-full" />}
                                         </div>
@@ -1424,9 +1424,9 @@ export default function BookingPage() {
                             </div>
 
                             {selectedPaymentMethod === 'pix' && (
-                                <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-slate-900 text-white space-y-4">
+                                <Card className="p-6 rounded-[2.5rem] border-none shadow-xl bg-gray-900 text-white space-y-4">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total com Desconto</p>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Total com Desconto</p>
                                         <p className="text-2xl font-black text-emerald-400">R$ {Math.floor((selectedService?.price || 0) * 0.95)},00</p>
                                     </div>
                                     <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl">
@@ -1450,8 +1450,8 @@ export default function BookingPage() {
                         <Card className="rounded-[2.5rem] border-none shadow-xl bg-white dark:bg-zinc-900 p-5">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Resumo</p>
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white">Quase tudo pronto!</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Resumo</p>
+                                    <h3 className="text-xl font-black text-gray-900 dark:text-white">Quase tudo pronto!</h3>
                                 </div>
                                 <Badge variant="outline" className="rounded-full text-[10px] uppercase tracking-widest">
                                     {STEP_DETAILS[step].label}
@@ -1459,32 +1459,32 @@ export default function BookingPage() {
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Serviço</p>
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{selectedService?.name}</p>
-                                    <p className="text-xs text-slate-500">{selectedService?.durationMinutes} min • R$ {selectedService?.price}</p>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Serviço</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedService?.name}</p>
+                                    <p className="text-xs text-gray-600">{selectedService?.durationMinutes} min • R$ {selectedService?.price}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profissional</p>
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{selectedEmployee?.name}</p>
-                                    <p className="text-xs text-slate-500">
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Profissional</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{selectedEmployee?.name}</p>
+                                    <p className="text-xs text-gray-600">
                                         {selectedEmployee?.specialties?.join(", ") || "Especialidades variadas"}
                                     </p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Data</p>
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Data</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
                                         {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })}
                                     </p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Horário</p>
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{activeTime}</p>
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Horário</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{activeTime}</p>
                                 </div>
                             </div>
                         </Card>
                         <Card className="rounded-[2.5rem] border-none shadow-lg bg-white dark:bg-zinc-900 p-5 space-y-3">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Ajuda & suporte</p>
-                            <p className="text-sm text-slate-500 dark:text-zinc-400">Precisa ajustar algo? Fale com a equipe em segundos.</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">Ajuda & suporte</p>
+                            <p className="text-sm text-gray-600 dark:text-zinc-400">Precisa ajustar algo? Fale com a equipe em segundos.</p>
                             <div className="flex flex-col gap-2">
                                 {tenant.whatsapp && (
                                     <Button variant="outline" className="rounded-2xl w-full" onClick={handleWhatsAppContact}>
@@ -1492,7 +1492,7 @@ export default function BookingPage() {
                                     </Button>
                                 )}
                                 {tenantPhone && (
-                                    <Button variant="ghost" className="rounded-2xl w-full text-slate-500" onClick={() => window.open(`tel:${tenantPhone}`, '_blank')}>
+                                    <Button variant="ghost" className="rounded-2xl w-full text-gray-600" onClick={() => window.open(`tel:${tenantPhone}`, '_blank')}>
                                         Ligar para {tenantPhone}
                                     </Button>
                                 )}
@@ -1504,18 +1504,18 @@ export default function BookingPage() {
 
             {/* Confidence Highlights */}
             <section className="max-w-4xl mx-auto px-6 pb-32 space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-slate-400 text-center">Por que reservar com a gente</h3>
+                <h3 className="text-sm font-bold uppercase tracking-[0.3em] text-gray-500 text-center">Por que reservar com a gente</h3>
                 <div className="grid gap-3 md:grid-cols-3">
                     {trustHighlights.map(item => {
                         const Icon = item.icon
                         return (
-                            <div key={item.title} className="p-4 rounded-2xl border border-slate-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 flex items-start gap-3">
+                            <div key={item.title} className="p-4 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 flex items-start gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <Icon className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-slate-900 dark:text-white">{item.title}</p>
-                                    <p className="text-xs text-slate-500">{item.description}</p>
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white">{item.title}</p>
+                                    <p className="text-xs text-gray-600">{item.description}</p>
                                 </div>
                             </div>
                         )
@@ -1526,7 +1526,7 @@ export default function BookingPage() {
             {/* Custom Bottom Navigation Bar */}
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-slate-50 via-slate-50 to-transparent dark:from-zinc-950 dark:via-zinc-950 z-50">
                 <div className="max-w-4xl mx-auto flex flex-col gap-3">
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
+                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.3em] text-gray-500">
                         <span>{STEP_DETAILS[step].label}</span>
                         {selectedService && (
                             <span className="text-primary flex items-center gap-1">
