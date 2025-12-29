@@ -169,12 +169,12 @@ const mapMockClient = (client: typeof clients[number]): ClientRecord => ({
     name: client.name,
     email: client.email,
     phone: client.phone,
-    document: client.cpf ?? undefined,
+    document: undefined,
     lastVisit: client.lastVisit,
     totalSpent: client.totalSpent,
     status: castClientStatus(client.status),
     avatar: client.avatar ?? "",
-    loyaltyPoints: client.points,
+    loyaltyPoints: undefined,
 })
 
 const mapRowToService = (row: ServiceRow): ServiceRecord => ({
