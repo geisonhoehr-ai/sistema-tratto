@@ -277,6 +277,7 @@ export default function BookingPage() {
     })
     const [authenticatedCustomer, setAuthenticatedCustomer] = useState<ClientRecord | null>(null)
 
+    const isCpfReady = normalizeCpf(clientData.cpf).length === 11
     const authMode: 'login' | 'register' = clientData.isExisting ? "login" : "register"
     const canSubmitAuthentication = authMode === "login"
         ? Boolean(isCpfReady && clientData.password)
@@ -462,8 +463,6 @@ export default function BookingPage() {
         if (!whatsappUrl) return
         window.open(whatsappUrl, "_blank")
     }
-
-    const isCpfReady = normalizeCpf(clientData.cpf).length === 11
 
     const tenantServices = useMemo(() => {
         if (!tenant) return serviceRecords
