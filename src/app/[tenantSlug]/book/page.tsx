@@ -844,47 +844,61 @@ export default function BookingPage() {
                     </Button>
                 </Card>
                 {/* Progress Tracker */}
-                <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                    {STEP_SEQUENCE.map((flowStep, index) => {
-                        const Icon = STEP_DETAILS[flowStep].icon
-                        const currentIndex = step === SUCCESS_STEP ? STEP_SEQUENCE.length : Math.max(STEP_SEQUENCE.indexOf(step), 0)
-                        const isCompleted = index < currentIndex
-                        const isCurrent = step === flowStep
-                        return (
-                        <div
-                                key={flowStep}
-                            className={cn(
-                                    "rounded-2xl border bg-white/80 dark:bg-zinc-900/70 p-4 transition-all",
-                                    isCompleted && "border-primary/40 shadow-lg shadow-primary/10",
-                                    isCurrent && "ring-2 ring-primary/40",
-                                    !isCompleted && !isCurrent && "border-gray-100 dark:border-zinc-800"
+                <div className="mb-10">
+                    <div className="mb-4">
+                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Seu progresso</p>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {STEP_SEQUENCE.map((flowStep, index) => {
+                            const Icon = STEP_DETAILS[flowStep].icon
+                            const currentIndex = step === SUCCESS_STEP ? STEP_SEQUENCE.length : Math.max(STEP_SEQUENCE.indexOf(step), 0)
+                            const isCompleted = index < currentIndex
+                            const isCurrent = step === flowStep
+                            return (
+                            <div
+                                    key={flowStep}
+                                className={cn(
+                                        "rounded-xl border bg-white dark:bg-zinc-900 p-5 transition-all hover:shadow-md",
+                                        isCompleted && "border-green-200 bg-green-50/50 dark:bg-green-900/10",
+                                        isCurrent && "border-blue-200 bg-blue-50/50 dark:bg-blue-900/10 shadow-lg",
+                                        !isCompleted && !isCurrent && "border-gray-100 dark:border-zinc-800"
+                                    )}
+                                >
+                                    <div className="flex items-start gap-4">
+                                        <div
+                                            className={cn(
+                                                "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all",
+                                                isCompleted
+                                                    ? "bg-green-600 text-white"
+                                                    : isCurrent
+                                                        ? "bg-gradient-to-br from-blue-600 to-purple-600 text-white"
+                                                        : "bg-gray-100 text-gray-400 dark:bg-zinc-800"
                                 )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center border",
-                                            isCompleted
-                                                ? "bg-primary text-white border-primary"
-                                                : isCurrent
-                                                    ? "bg-primary/10 text-primary border-primary/20"
-                                                    : "bg-white text-gray-500 border-gray-200 dark:bg-zinc-900 dark:border-zinc-800"
-                            )}
-                                    >
-                                        <Icon className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-black uppercase tracking-widest text-gray-600 dark:text-zinc-400">
-                                            {STEP_DETAILS[flowStep].label}
-                                        </p>
-                                        <p className="text-[11px] text-gray-500 dark:text-zinc-500">
-                                            {STEP_DETAILS[flowStep].description}
-                                        </p>
+                                        >
+                                            {isCompleted ? (
+                                                <CheckCircle2 className="w-6 h-6" />
+                                            ) : (
+                                                <Icon className="w-6 h-6" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className={cn(
+                                                "text-sm font-bold mb-1",
+                                                isCompleted && "text-green-700 dark:text-green-400",
+                                                isCurrent && "text-blue-700 dark:text-blue-400",
+                                                !isCompleted && !isCurrent && "text-gray-600 dark:text-zinc-400"
+                                            )}>
+                                                {STEP_DETAILS[flowStep].label}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-zinc-500">
+                                                {STEP_DETAILS[flowStep].description}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )
-                    })}
+                            )
+                        })}
+                    </div>
                 </div>
 
                 <AnimatePresence mode="wait">
